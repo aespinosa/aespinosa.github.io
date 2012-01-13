@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Caching FreeBSD packages with a proxy server - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Caching FreeBSD packages with a proxy server</h1>
+  <p>2015 February 21</p>
+
+  <section>
+    <p>By setting up apt-cacher-ng <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> in you local development environment, you can save on precious bandwidth when building Chef recipes (or any server side stuff) on your local machine. Below are some of the steps to get this up and running.</p>
+<h2 id="install-and-configure-apt-cacher-ng">Install and configure apt-cacher-ng</h2>
+<p>In a Mac you can get it via homebrew</p>
+<pre><code>brew install apt-cacher-ng</code></pre>
+<p>When configuring apt-cacher-ng you need to set the following</p>
+<ol type="1">
+<li>Setup the freebsd repository</li>
+<li>Set Pigeonhole files for *.txz files for packages and meta.txz, packagesite.txz, digests.txz for metadata files.</li>
+</ol>
+<p>TLDR: Place these changes to your vanilla apt-cacher-ng configuration.</p>
+<pre><code>--- acng.conf.vanilla    2015-02-19 23:50:34.000000000 +0900
++++ acng.conf            2015-02-21 01:40:51.000000000 +0900
+@@ -62,6 +62,7 @@
+ Remap-epel:   file:epel_mirrors # Fedora EPEL
+ Remap-slrep:  file:sl_mirrors # Scientific Linux
+ Remap-gentoo: file:gentoo_mirrors.gz /gentoo ; file:backends_gentoo # Gentoo Archives
++Remap-freebsd: pkg.freebsd.org pkgmir.pkg.freebsd.org
+ 
+ # This is usually not needed for security.debian.org because it's always the
+ # same DNS hostname. However, it might be enabled in order to use hooks
+@@ -170,8 +171,8 @@
+ # Pigeonholing files with regular expressions (static/volatile). Can be
+ # overriden here but not should not be done permanently because future update
+ # of default settings would not be applied later.
+-# VfilePattern = (^|.*/)(Index|Packages(\.gz|\.bz2|\.lzma|\.xz)?|InRelease|Release|Release\.gpg|custom\.gpg|mirrors.txt|Sources(\.gz|\.bz2|\.lzma|\.xz)?|release|index\.db-.*\.gz|Contents-[^/]*(\.gz|\.bz2|\.lzma|\.xz)?|pkglist[^/]*\.bz2|rclist[^/]*\.bz2|meta-release[^/]*|Translation[^/]*(\.gz|\.bz2|\.lzma|\.xz)?|MD5SUMS|SHA1SUMS|((setup|setup-legacy)(\.ini|\.bz2|\.hint)(\.sig)?)|mirrors\.lst|repo(index|md)\.xml(\.asc|\.key)?|directory\.yast|products|content(\.asc|\.key)?|media|filelists\.xml\.gz|filelists\.sqlite\.bz2|repomd\.xml|packages\.[a-zA-Z][a-zA-Z]\.gz|info\.txt|license\.tar\.gz|license\.zip|.*\.(db|files|abs)(\.tar(\.gz|\.bz2|\.lzma|\.xz))?|metalink\?repo|.*prestodelta\.xml\.gz|repodata/.*\.(xml|sqlite)(\.gz|\.bz2|\.lzma|\.xz))$|/dists/.*/installer-[^/]+/[^0-9][^/]+/images/.*
+-# PfilePattern = .*(\.d?deb|\.rpm|\.drpm|\.dsc|\.tar(\.gz|\.bz2|\.lzma|\.xz)(\.gpg)?|\.diff(\.gz|\.bz2|\.lzma|\.xz)|\.jigdo|\.template|changelog|copyright|\.udeb|\.debdelta|\.diff/.*\.gz|(Devel)?ReleaseAnnouncement(\?.*)?|[a-f0-9]+-(susedata|updateinfo|primary|deltainfo).xml.gz|fonts/(final/)?[a-z]+32.exe(\?download.*)?|/dists/.*/installer-[^/]+/[0-9][^/]+/images/.*)$
++VfilePattern = (^|.*/)((meta|packagesite|digests)\.txz|Index|Packages(\.gz|\.bz2|\.lzma|\.xz)?|InRelease|Release|Release\.gpg|custom\.gpg|mirrors.txt|Sources(\.gz|\.bz2|\.lzma|\.xz)?|release|index\.db-.*\.gz|Contents-[^/]*(\.gz|\.bz2|\.lzma|\.xz)?|pkglist[^/]*\.bz2|rclist[^/]*\.bz2|meta-release[^/]*|Translation[^/]*(\.gz|\.bz2|\.lzma|\.xz)?|MD5SUMS|SHA1SUMS|((setup|setup-legacy)(\.ini|\.bz2|\.hint)(\.sig)?)|mirrors\.lst|repo(index|md)\.xml(\.asc|\.key)?|directory\.yast|products|content(\.asc|\.key)?|media|filelists\.xml\.gz|filelists\.sqlite\.bz2|repomd\.xml|packages\.[a-zA-Z][a-zA-Z]\.gz|info\.txt|license\.tar\.gz|license\.zip|.*\.(db|files|abs)(\.tar(\.gz|\.bz2|\.lzma|\.xz))?|metalink\?repo|.*prestodelta\.xml\.gz|repodata/.*\.(xml|sqlite)(\.gz|\.bz2|\.lzma|\.xz))$|/dists/.*/installer-[^/]+/[^0-9][^/]+/images/.*
++PfilePattern = .*(\.d?deb|\.rpm|\.drpm|\.txz|\.dsc|\.tar(\.gz|\.bz2|\.lzma|\.xz)(\.gpg)?|\.diff(\.gz|\.bz2|\.lzma|\.xz)|\.jigdo|\.template|changelog|copyright|\.udeb|\.debdelta|\.diff/.*\.gz|(Devel)?ReleaseAnnouncement(\?.*)?|[a-f0-9]+-(susedata|updateinfo|primary|deltainfo).xml.gz|fonts/(final/)?[a-z]+32.exe(\?download.*)?|/dists/.*/installer-[^/]+/[0-9][^/]+/images/.*)$
+ # 
+ # Whitelist for expiration, file types not to be removed even when being
+ # unreferenced. Default: many parts from VfilePattern where no parent index
+/usr/local/etc/apt-cacher-ng$ vagrant plugin list</code></pre>
+<p>Finally run apt-cacher-ng like as follows on your mac</p>
+<p>launchctl load /usr/local/opt/apt-cacher-ng/homebrew.mxcl.apt-cacher-ng.plist</p>
+<h2 id="update-your-base-vagrant-box">Update your base vagrant box</h2>
+<p>I am using Chef’s FreeBSD 10.1 basebox <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> from its bento repository <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> here. I modify the Vagrantfile in the basebox as follows.</p>
+<pre><code>Vagrant.configure '2' do |config|
+  config.vm.provision 'shell', inline: &lt;&lt;-eos
+#!/bin/sh
+mkdir -p /usr/local/etc/pkg/repos
+cat &gt; /usr/local/etc/pkg/repos/freebsd.conf &lt;&lt;EOF
+FreeBSD { url: &quot;pkg+http://&lt;ip-of-mac-vagrant-host&gt;:3142/pkg.FreeBSD.org/\\${ABI}/latest&quot; }
+EOF
+  eos
+end</code></pre>
+<p>The basebox’ Vagrantfile is found in <code>~/.vagrant.d/boxes/chef-VAGRANTSLASH-freebsd10.1/0/vmware_desktop/Vagrantfile</code> in my case.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://www.unix-ag.uni-kl.de/~bloch/acng/" class="uri">https://www.unix-ag.uni-kl.de/~bloch/acng/</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><a href="http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_freebsd-10.1_chef-provisionerless.box" class="uri">http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_freebsd-10.1_chef-provisionerless.box</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p><a href="https://github.com/chef/bento" class="uri">https://github.com/chef/bento</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

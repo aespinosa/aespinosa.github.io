@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Integration testing with the Kubernetes Java Client - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Integration testing with the Kubernetes Java Client</h1>
+  <p>2021 February 11</p>
+
+  <section>
+    <p>Frameworks for writing Kubernetes controllers in native Golang has <a href="https://pkg.go.dev/sigs.k8s.io/controller-runtime/pkg/envtest">envtest</a>. It is well documented and various frameworks like Kubebuilder and Operator SDK shows a lot of example how to use it.</p>
+<p>controller-runtime/envtest sets up an integration test for a controller by spinning up the Kubernetes Control plane with your custom CRDs. We can do the same with Java using popular libraries and integrate them with the process of spinning up a Kubernetes Control Plane. This post shows how to do it with <a href="https://k3s.io">K3s</a> but it can be adopted to use other micro-Kubernetes distributions like <a href="https://kind.sigs.k8s.io/">kind</a>, <a href="https://microk8s.io/">MicroK8s</a>, etc. We can even make a port of controller-runtime/envtest by spinning up Etcd and kube-apiserver ourselves!</p>
+<p>An integration test basically consists of three parts:</p>
+<ol type="1">
+<li>Spin up a Kubernetes Cluster. In most cases for building controllers/ operators, the control plane (kube-apiserver) is usually enough.</li>
+<li>Interact with the new Kube cluster by preparing CRDs, running the controller to test and asserting expected behavior.</li>
+<li>Stop and delete the Kubernetes cluster.</li>
+</ol>
+<p>In this post, we replicate the integration test structure in Java using the <a href="https://github.com/kubernetes-client/java">Kubernetes Java Client</a>.</p>
+<h2 id="start-kubernetes-cluster">1. Start Kubernetes cluster</h2>
+<p>First we start our Kubernetes Control plane. Here we will spin up the k3s control plane with the command <code>k3s server --disable-agent</code> as a background process in Java:</p>
+<pre><code>Path tempDir = Files.createTempDirectory(&quot;kube-cluster&quot;);
+File kubeConfig = new File(tempDir.toFile(), &quot;k3s.yaml&quot;);
+
+Process k3sServer = new ProcessBuilder(&quot;k3s&quot;, &quot;server&quot;,
+  &quot;--disable-agent&quot;,
+  &quot;--bind-address&quot;, &quot;127.0.0.1&quot;,
+  &quot;--data-dir&quot;, tempDir.toString(),
+  &quot;--write-kubeconfig&quot;, kubeConfig.toString())
+  .start();</code></pre>
+<p>We create the data that k3s stores in a temporary directory so that our tests are isolated from each other. We specify this temporary directory with the <code>--data-dir</code> flag. This also guarantees that each test starts with a clean state of the kubernetes cluster.</p>
+<p>The next step is we wait until our control plane is ready.</p>
+<p>First we need to figure out how to connect to this new Kubernetes cluster. k3s generates a <code>KUBECONFIG</code> file that specifies an admin account to connect to the kubernetes cluster. In our test suite, we store this file in our temporary directory. We wait until k3s create this <code>KUBECONFIG</code> file before initializing our Java client:</p>
+<pre><code>while (true) {
+  if (kubeConfig.exists()) break;
+  Thread.sleep(500);
+}
+
+KubeConfig config = KubeConfig.loadKubeConfig(new FileReader(kubeConfig));
+ApiClient admin = ClientBuilder.kubeconfig(config).build();</code></pre>
+<p>Now that we have the <code>ApiClient</code> object initialize, we use this to query the kube-apiserver if it is ready to server requests. We poll the <a href="https://kubernetes.io/docs/reference/using-api/health-checks/"><code>/readyz</code></a> endpoint and block until it gives us a 200 response. This indicates that our control plane is ready.</p>
+<pre><code>while (true) {
+  int code = admin.buildCall(&quot;/readyz&quot;, &quot;GET&quot;,
+      null, null, null, Map.of(), Map.of(), null,
+      new String[]{&quot;BearerToken&quot;}, null)
+    .execute().code();
+  if (code == 200) break;
+  Thread.sleep(500);
+}</code></pre>
+<h2 id="run-test-suite">2. Run test suite</h2>
+<p>At this point, we are now ready to run our controller like <a href="https://github.com/kubernetes-client/java/blob/master/examples/examples-release-12/src/main/java/io/kubernetes/client/examples/ControllerExample.java"><code>ControllerExample.java</code></a>. In the snippet below we just run some sample code to interact with the kube-apiserver:</p>
+<pre><code>CoreV1Api core = new CoreV1Api(admin);
+V1NamespaceList namespaces = core.listNamespace(null, null, null, null,
+    null,
+    null, null, null, null, null);
+System.out.println(namespaces);</code></pre>
+<h2 id="shutdown-and-delete-the-cluster">3. Shutdown and delete the cluster</h2>
+<p>Now that our tests are finished, it is time we bring down the cluster and delete the temporary data it created:</p>
+<pre><code>k3sServer.destroy();
+// Use commons-io:commons-io library to recursively delete the directory
+FileUtils.deleteDirectory(tempDir.toFile());</code></pre>
+<h2 id="source-code">Source code</h2>
+<p>Full snippet of the implementation can be found in <a href="https://gist.github.com/aespinosa/10268e7dfc3b2b3661b0daea8e7269ee" class="uri">https://gist.github.com/aespinosa/10268e7dfc3b2b3661b0daea8e7269ee</a>.</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 12
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>creating fast spec coverage on legacy recipes - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>creating fast spec coverage on legacy recipes</h1>
+  <p>2013 May  1</p>
+
+  <section>
+    <p>As techniques in testing Chef recipes are still evolving, most of use inherit large untested cookbook codebases from eons ago (translates to a few months in Chef’s community speed).   After watching Chefconf 2013 livestreams, I decided to give chefspec [3] a try.  However, most of the write-ups about chefspec cover pretty basic.  Here, I will write how I covered our legacy chef repository with fast tests.  For this example, I will be writing coverage for opscode’s nginx recipe [1] .</p>
+<p>First we begin by covering examples for all resources that gets created by default.</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>describe 'nginx::default' do
+  it &quot;loads the ohai plugin&quot;
+  it &quot;starts the service&quot;
+end</code></pre>
+</blockquote>
+<p>Then, we create contexts for each test case in the recipe logic.</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>describe 'nginx::default' do
+  it &quot;loads the ohai plugin&quot;
+
+  it &quot;builds from source when specified&quot;
+
+  context &quot;install method is by package&quot; do
+    context &quot;when the platform is redhat-based&quot; do
+      it &quot;includes the yum::epel recipe if the source is epel&quot;
+      it &quot;includes the nginx::repo recipe if the source is not epel&quot;
+    end
+    it &quot;installs the package&quot;
+    it &quot;enables the service&quot;
+    it &quot;includes common configurations&quot;
+  end
+
+  it &quot;starts the service&quot;
+end</code></pre>
+</blockquote>
+<p>Now we have a general idea of what tests to write from the rspec documentation run:</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code> rspec spec/default_spec.rb
+
+nginx::default
+  loads the ohai plugin (PENDING: Not yet implemented)
+  builds from source when specified (PENDING: Not yet implemented)
+  starts the service (PENDING: Not yet implemented)
+  install method is by package
+    installs the package (PENDING: Not yet implemented)
+    enables the service (PENDING: Not yet implemented)
+    includes common configurations (PENDING: Not yet implemented)
+    when the platform is redhat-based
+      includes the yum::epel recipe if the source is epel (PENDING: Not yet implemented)
+      includes the nginx::repo recipe if the source is not epel (PENDING: Not yet implemented)
+
+Pending:
+  nginx::default loads the ohai plugin
+    # Not yet implemented
+    # ./spec/default_spec.rb:4
+  nginx::default builds from source when specified
+    # Not yet implemented
+    # ./spec/default_spec.rb:6
+  nginx::default starts the service
+    # Not yet implemented
+    # ./spec/default_spec.rb:18
+  nginx::default install method is by package installs the package
+    # Not yet implemented
+    # ./spec/default_spec.rb:13
+  nginx::default install method is by package enables the service
+    # Not yet implemented
+    # ./spec/default_spec.rb:14
+  nginx::default install method is by package includes common configurations
+    # Not yet implemented
+    # ./spec/default_spec.rb:15
+  nginx::default install method is by package when the platform is redhat-based includes the yum::epel recipe if the source is epel
+    # Not yet implemented
+    # ./spec/default_spec.rb:10
+  nginx::default install method is by package when the platform is redhat-based includes the nginx::repo recipe if the source is not epel
+    # Not yet implemented
+    # ./spec/default_spec.rb:11
+
+Finished in 0.00977 seconds
+8 examples, 0 failures, 8 pending</code></pre>
+</blockquote>
+<p>Progress can be found in [2] where i tested everything.  Next I will be writing on how I tested the nginx nginx_site definitions.</p>
+<ol type="1">
+<li><p><a href="http://community.opscode.com/cookbooks/nginx">http://community.opscode.com/cookbooks/nginx</a></p></li>
+<li><p><a href="https://github.com/aespinosa/cookbook-nginx">https://github.com/aespinosa/cookbook-nginx</a></p></li>
+<li><p><a href="https://github.com/acrmp/chefspec">https://github.com/acrmp/chefspec</a></p></li>
+<li><p><a href="https://www.destroyallsoftware.com/screencasts/catalog/untested-code-part-1-introduction">https://www.destroyallsoftware.com/screencasts/catalog/untested-code-part-1-introduction</a></p></li>
+</ol>
+<p>Disclaimer: I came from an xUnit-testing background so I maybe interchanging “test cases” with “examples” and other purist stuff.  Also I may need to proof read on how my spec examples speak.</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

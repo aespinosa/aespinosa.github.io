@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Collated schematic diagrams - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Collated schematic diagrams</h1>
+  <p>2007 June 16</p>
+
+  <section>
+    <p>When I was scouring through my files in my undergraduate years, I decided to compile all of the figures and schematic diagrams from all the lab reports and other technical papers.</p>
+<p>My preference in submitting paperwork was typesetting everything in TeX/LaTeX. It is a markup language similar to HTML but with a huge emphasis on math equations. In fact this blog uses a TeX engine to typeset the formula figures.</p>
+<p>All schematic diagrams and figures were generated using <a href="http://www.ece.uwaterloo.ca/~aplevich/Circuit_macros/">Circuit_macros</a> made by <a href="http://www.ece.uwaterloo.ca/~aplevich/">J. Aplevich</a>. It is a collection of m4 macros that generates Pic figures. Pic is a markup language for generating figures and it is part of the Groff document formatting system. The program has a ‘-t’ options which can be used to create TeX-markup figures. It takes a few steps in generating a schematic diagram using this system:</p>
+<ol type="1">
+<li><p>Create a .m4 file using the macros found in various Circuit_macros libraries. The package contains vast documentations and examples to get started on your own diagrams. It is also good to consult the gpic document to know various pic primitives such as squares, circles, ellipses, etc.</p></li>
+<li><p>Process it in the commandline using “$&gt; m4 file.m4 | pic -t &gt; out.tex”. The <em>out.tex</em> file is then the main figure. You can now use this in your schematic diagrams.</p></li>
+<li><p>In your TeX documents, the figure can be included using <code>\input{out.tex} \box\graph</code></p></li>
+</ol>
+<p>Here are a few examples of what I have made during my undegraduate years. More can be found in my <a href="http://www.flickr.com/photos/yecartes/tags/electronics">Flickr page</a>.</p>
+<p><a href="http://www.flickr.com/photos/yecartes/554239140/"><img src="http://farm2.static.flickr.com/1355/554239140_978f3ec961_t.jpg" alt="amp" /></a><a href="http://www.flickr.com/photos/yecartes/554235964/"><img src="http://farm2.static.flickr.com/1005/554235964_8348cd9128_t.jpg" alt="amp" /></a><a href="http://www.flickr.com/photos/yecartes/554499961/"><img src="http://farm2.static.flickr.com/1116/554499961_8e8ada3a5d_t.jpg" alt="logic" /></a><a href="http://www.flickr.com/photos/yecartes/554494559/"><img src="http://farm2.static.flickr.com/1179/554494559_f096730572_t.jpg" alt="mix" /></a></p>
+<p>Technorati Tags: <a href="http://technorati.com/tag/circuit_macros">circuit_macros</a>, <a href="http://technorati.com/tag/tex">tex</a>, <a href="http://technorati.com/tag/latex">latex</a>, <a href="http://technorati.com/tag/typesetting">typesetting</a>, <a href="http://technorati.com/tag/electronics">electronics</a>, <a href="http://technorati.com/tag/schematic%20diagrams">schematic diagrams</a>, <a href="http://technorati.com/tag/circuits">circuits</a></p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>FASTA splitting with BioRuby - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>FASTA splitting with BioRuby</h1>
+  <p>2009 December  9</p>
+
+  <section>
+    <p>In reference to my <a href="http://amespinosa.wordpress.com/2009/10/08/splitting-bioinformatics-fasta-files/">previous post</a>, here’s the splitter using BioRuby.  Note that I also changed the outer loop to one file per iteration instead of some crazy rules of when to create the file.</p>
+<p>`[sourcecode lang=“ruby”] #!/usr/bin/env ruby # # Script: dumpseq.rb [file] [N] [prefix] # Description: Splits a fasta file evenl across N files. dumps files in the # [prefix] directory require ‘bio’ require ‘fileutils’</p>
+<p>include Bio</p>
+<p>seqs = FlatFile.open(ARGV[0]) ncpus = ARGV[1].to_i prefix = ARGV[2]</p>
+<h1 id="remove-and-hardwire-n_seqs-if-you-know-beforehand-the-number-of-sequences-in">Remove and hardwire n_seqs if you know beforehand the number of sequences in</h1>
+<h1 id="a-file.-saves-readtime">a file. Saves readtime</h1>
+<p>n_seqs = 0 seqs.each do |seq| n_seqs += 1 end seqs.rewind</p>
+<p>overflow = n_seqs % ncpus split_size = n_seqs / ncpus</p>
+<p>ncpus.times do |i| filename = sprintf “%s/D%07d/seq%07d.fasta”, prefix, i, i FileUtils.mkdir_p File.dirname(filename) dump = File.new(filename, “w”) split_size.times do |j| dump &lt;&lt; seqs.next_entry.to_s end if i &lt; overflow dump &lt;&lt; seqs.next_entry.to_s end dump.close end</p>
+<p>`</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

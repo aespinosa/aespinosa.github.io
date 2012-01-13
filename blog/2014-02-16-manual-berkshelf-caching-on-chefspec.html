@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Manual berkshelf caching on chefspec - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Manual berkshelf caching on chefspec</h1>
+  <p>2014 February 16</p>
+
+  <section>
+    <p>Chefspec 3.2.0 introduced berkshelf integration lately.  However this will decrease the test speed as chefspec will setup and teardown berkshelf all the time. </p>
+<p>Below is a snipped to similar <a href="https://github.com/sethvargo/chefspec/issues/242">chefspec#242</a> .  But in addition, I removed the vendoring of the cookbook in development.   Here is my <a href="https://github.com/aespinosa/aspnet_skeleton/blob/master/Rakefile#L9-L13">rake task</a> to do that build:</p>
+<pre><code>task :build do
+  File.open(&quot;chefignore&quot;, &quot;a&quot;).write(&quot;*aspnet_skeleton*&quot;)
+  berksfile.install path: &quot;vendor/cookbooks&quot;
+  FileUtils.rmdir &quot;vendor/cookbooks/aspnet_skeleton&quot;
+end</code></pre>
+<p>This approach has several advantages: [1] chefspec doesn’t need to build the vendored directory everytime rspec is invoked, [2] you can run the test against the source code directory for a fast TDD feedback cycle, and [3]  build and test phases for your CI pipeline can be separated.</p>
+<p>Here’s how chefspec consumes the vendored cookbook_path and cookbook-in-development <a href="https://github.com/aespinosa/aspnet_skeleton/blob/master/spec/default_spec.rb#L6">simultaenously</a>:</p>
+<pre><code>RSpec.configure do |config|
+  config.cookbook_path = %w(vendor/cookbooks ../)
+end</code></pre>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

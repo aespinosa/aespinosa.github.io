@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>New Phone: Motorla Razr V3r - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>New Phone: Motorla Razr V3r</h1>
+  <p>2006 August 28</p>
+
+  <section>
+    <p>After several years, I dropped my Nokia 3315 phone for the last time. The LCD got busted and the crystals were scattered all over the screen rendering it useless. Theoretically it still works but you have to guess and interpolate what’s happening inside the phone based on its initial power up.</p>
+<p>Then I went to greenhills and brought this nifty new Motorola Razr V3r. Scouring deeper into the shops gave me a better deal of almost Php 600 less than the original price found in the first few stalls of the shopping complex.</p>
+<p>I took a photo of the razr against a white bond paper over an overcast sky. Shooting the phone under clear sky conditions will give better light while maintaining the soft studio effect.</p>
+<p><img src="http://static.flickr.com/95/219946616_ea3251182e_m.jpg" /></p>
+<p>I found a few good sites suggesting how to tweak the phone. This includes the explanation of the Motorola Razr file system. The phone is read under Linux kernel 2.4 and 2.6. My personal 2.6.14 kernel has to be rebuilt and added the cdc-acm.o module. For kernel 2.4.31 (the default Slackware 10.2 kernel) the module is called acm.o. With the module installed in my box, I am able to use a standard USB A to USB mini phone to charge it and read the filesystem.</p>
+<blockquote>
+<p>$modinfo cdc-acm<br />
+author: Armin Fuerst, Pavel Machek, Johannes Erdfelt, Vojtech Pavlik<br />
+description: USB Abstract Control Model driver for USB modems and ISDN adapters</p>
+</blockquote>
+<p>For conveniently accesing the filesystem I installed the latest CVS snapshot of moto4lin[1]. It is a Qt-based application that connects to the motorola device via the USB modem drivers for linux.</p>
+<blockquote>
+<p>$cvs -d:pserver:anonymous@moto4lin.cvs.sourceforge.net:/cvsroot/moto4lin login<br />
+$cvs -z3 -d:pserver:anonymous@moto4lin.cvs.sourceforge.net:/cvsroot/moto4lin co -P moto4lin<br />
+$qmake<br />
+$make<br />
+$make install</p>
+</blockquote>
+<p>[1] <a href="http://moto4lin.sourceforge.net">http://moto4lin.sourceforge.net</a></p>
+<p>Technorati Tags: <a href="http://technorati.com/tag/linux">linux</a>, <a href="http://technorati.com/tag/motorola">motorola</a>, <a href="http://technorati.com/tag/razr">razr</a>, <a href="http://technorati.com/tag/phone">phone</a>, <a href="http://technorati.com/tag/synchronization">synchronization</a></p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

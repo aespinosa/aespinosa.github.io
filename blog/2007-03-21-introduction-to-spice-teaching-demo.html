@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Introduction to SPICE: teaching demo - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Introduction to SPICE: teaching demo</h1>
+  <p>2007 March 21</p>
+
+  <section>
+    <p>I applied a couple of weeks ago to join the faculty of the <a href="http://www.ateneo.edu/index.php?p=1552">ECCE Department</a> in <a href="http://www.ateneo.edu">Ateneo de Manila</a>. For my demo teaching class, I decided to give a short lecture on using SPICE for DC circuit analsysis of simple resistor networks.</p>
+<p>Lecture Prerequisites:</p>
+<ol type="1">
+<li><p>Familiarity with basic electronic concepts. The topics for this introduction will contain DC analysis of passive devices (e.g. resistors, inductors, capacitors). A short lecture on basic circuit analysis might be included if I am able to obtain a copy of <a href="http://eu.wiley.com/WileyCDA/WileyTitle/productCd-0471365718.html">Electric Circuit Analysis</a> by Johnson and Johnson</p></li>
+<li><p>Minor background on operating a CLI (command-line-interface) environment. The lecture will demonstrate the use of ngspice [1] on a Linux terminal.</p></li>
+</ol>
+<p>SPICE stands for “Simulation Program with Integrated Circuit Emphasis”. Most simulation tools such as Electronic WorkBench, MultiSim and LTSpice generate SPICE code from the schematics diagrams that were drawn by the designer. For a quick overview of SPICE here, is a short description from Wikipedia [1]:</p>
+<blockquote>
+<p>Integrated circuits, unlike board-level designs composed of discrete parts, are impossible to <a href="http://en.wikipedia.org/wiki/Breadboard">breadboard</a> before manufacture. Further, the high costs of photolithographic masks and other manufacturing prerequisites make it essential to design the circuit to be as close to perfect as possible before the integrated circuit is first built. Simulating the circuit with SPICE is the industry-standard way to verify circuit operation at the transistor level before committing to manufacturing an integrated circuit.</p>
+<p>Board-level designs can often be breadboarded, but designers may want more information about the circuit than is available from a single mock-up. For instance, performance is affected by component manufacturing tolerances and it is helpful for designers to simulate with SPICE to predict the effect of variations of those values. Even with a breadboard, some aspects may not be accurate compared to the final printed wiring board, such as parasitic resistances and capacitances. In these cases it is common to perform <a href="http://en.wikipedia.org/wiki/Monte_Carlo_method">Monte Carlo</a> simulations using SPICE, a task which is impractical using calculations by hand.</p>
+<p>Circuit simulation programs, of which SPICE and derivatives are the most prominent, take a text <a href="http://en.wikipedia.org/wiki/Netlist">netlist</a> describing the circuit elements (<a href="http://en.wikipedia.org/wiki/Transistors">transistors</a>, <a href="http://en.wikipedia.org/wiki/Resistors">resistors</a>, <a href="http://en.wikipedia.org/wiki/Capacitors">capacitors</a>, etc.) and their connections, and translate this description into equations to be solved. The general equations produced are nonlinear <a href="http://en.wikipedia.org/wiki/Differential_algebraic_equation">differential algebraic equations</a> which are solved using <a href="http://en.wikipedia.org/w/index.php?title=Implicit_integration_methods&amp;action=edit">implicit integration methods</a>, <a href="http://en.wikipedia.org/wiki/Newton%27s_method">Newton’s method</a> and <a href="http://en.wikipedia.org/wiki/Sparse_matrix">sparse matrix</a> techniques.</p>
+</blockquote>
+<p>Materials will be posted later on (I hope). The class will be held on March 21, 2007 (GMT+0800) in Faura Hall Rm 319 (see <a href="http://www.google.com/calendar/embed?src=yecartes%40gmail.com">my Google Calendar</a>)</p>
+<p>[1]“SPICE.” <em>Wikipedia, the free encyclopedia. </em><a href="http://en.wikipedia.org/wiki/SPICE">http://en.wikipedia.org/wiki/SPICE</a><br />
+[2] _Ngspice circuit simulator. _http://www.ngspice.org</p>
+<p>Technorati Tags: <a href="http://technorati.com/tag/spice">spice</a>, <a href="http://technorati.com/tag/simulation">simulation</a>, <a href="http://technorati.com/tag/circuit%20analysis">circuit analysis</a>, <a href="http://technorati.com/tag/electronics">electronics</a>, <a href="http://technorati.com/tag/ateneo%20ecce">ateneo ecce</a></p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

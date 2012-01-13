@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Testing recipe definitions with chefspec - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Testing recipe definitions with chefspec</h1>
+  <p>2013 May  6</p>
+
+  <section>
+    <p>Last time [1], we wrote chefspec tests to cover the behavior of the nginx::default recipe.  Another component provided by the recipe, is the nginx_site definition.  Similar to the previous approach we cover the definition’s resources for each possible track the recipe can go through.  The following is the output when the specs succeed.</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>nginx::default
+  #nginx_site (definition)
+    #enable =&gt; true (default)
+      should execute command &quot;/usr/sbin/nxensite foo&quot;
+      should notify &quot;service[nginx]&quot; and &quot;reload&quot;
+    #enable =&gt; false
+      should execute command &quot;/usr/sbin/nxdissite foo&quot;
+      should notify &quot;service[nginx]&quot; and &quot;reload&quot;</code></pre>
+</blockquote>
+<p>To go about covering the behavior, we start driving TDD by creating failing specs staring with the default case:</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>context &quot;#nginx_site (definition)&quot; do
+  context &quot;#enable =&gt; true (default)&quot; do
+    it { expect(chef_run).to execute_command &quot;/usr/sbin/nxensite foo&quot; }
+    it do
+      expect(chef_run.execute(&quot;nxensite foo&quot;))
+      .to notify(&quot;service[nginx]&quot;, &quot;reload&quot;)
+    end
+  end
+end</code></pre>
+</blockquote>
+<p>The above specs will fail because nginx::default doesn’t to make a nginx_site(“foo”) call.  In minitest or test-kitchen, the approach was to create a test recipe that will conduct this integration test.  However, for isolated chefspecs, this is too heavy weight.  Code diving into the Chef 11.4.4 documentation and code [2], every recipe file is loaded by an instance_eval call on Recipe objects.  Hence we can make this approach to inject a fake recipe.  Below, we created a recipe called “nginx_spec::default” with using the existing run context from the “nginx::default” run.</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>def fake_recipe(run, &amp;block)
+  recipe = Chef::Recipe.new(&quot;nginx_spec&quot;, &quot;default&quot;, run.run_context)
+  recipe.instance_eval(&amp;block)
+end
+
+# call to the spec example
+
+recipe = fake_recipe(chef_run) do
+  nginx_site &quot;foo&quot; do
+    enable enabled
+  end
+end</code></pre>
+</blockquote>
+<p>Next, we create a new ChefSpec::ChefRunner instance by appending our internally-created “nginx_spec::default” recipe to the existing “nginx::default” run.  For this we monkey-patch chefspec to converge the added recipe:</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>class ChefSpec::ChefRunner
+  def append(recipe)
+    runner = Chef::Runner.new(recipe.run_context)
+    runner.converge
+    self
+  end
+end
+
+# usage in our examples:
+new_run = chef_run.append(recipe)</code></pre>
+</blockquote>
+<p>Now we can change our specs to use this new runner context instead to make our expectations.  Below is the whole context that makes the spec pass:</p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>context &quot;#enable =&gt; true (default)&quot; do
+  let(:run) do
+    recipe = fake_recipe(chef_run) do
+      nginx_site &quot;foo&quot;
+    end
+    chef_run.append(recipe)
+  end
+
+  it { expect(run).to execute_command &quot;/usr/sbin/nxensite foo&quot; }
+
+  it do
+    expect(run.execute(&quot;nxensite foo&quot;))
+    .to notify(&quot;service[nginx]&quot;, &quot;reload&quot;)
+  end
+end</code></pre>
+</blockquote>
+<p>And now we have the nginx_site definition covered.  I made commits on the changes in my fork [3] of the opscode cookbook.  Although the approach is useful, this intrusive monkey-patching to chefspec (which is itself a monkey-patch on chef) shows why folks at Opscode recommend to use LWRPS into new recipe development as you can monitor the state of the new resource itself.  With definitions, you have to track the state of the resources made inside the definition action and provide the necessary spec.  This also has implications when you are driving the recipes via TDD to use the nginx_site definition.  I will cover testing that in another post.</p>
+<ol type="1">
+<li><p><a href="http://amespinosa.wordpress.com/2013/05/01/creating-fast-spec-coverage-on-legacy-recipes/">http://amespinosa.wordpress.com/2013/05/01/creating-fast-spec-coverage-on-legacy-recipes/</a></p></li>
+<li><p><a href="http://rubydoc.info/gems/chef/11.4.4/Chef/DSL/IncludeRecipe#load_recipe-instance_method">http://rubydoc.info/gems/chef/11.4.4/Chef/DSL/IncludeRecipe#load_recipe-instance_method</a></p></li>
+<li><p><a href="https://github.com/aespinosa/cookbook-nginx/commit/81ca51fcfcf8612101486371b3d46bc246fba322">https://github.com/aespinosa/cookbook-nginx/commit/81ca51fcfcf8612101486371b3d46bc246fba322</a></p></li>
+</ol>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

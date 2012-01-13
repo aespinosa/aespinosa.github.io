@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Unix timer utility - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Unix timer utility</h1>
+  <p>2008 August  8</p>
+
+  <section>
+    <p>[caption id="" align=“aligncenter” width=“400” caption=“Timer utilities performance on C and Perl of”echo -n""][<img src="http://farm4.static.flickr.com/3069/2745203142_8e3e868b8c.jpg" alt="Timer microbenchmark" />](http://www.flickr.com/photos/23313643@N00/2745203142/)[/caption]</p>
+<p>The Unix time(1) command can only give a precision of 10 milliseconds by default. But being the engineer who goes insane after precision, I made my own script to be able to get differences in terms of microseconds. My first timer utility was made in C but I got stuck with the insane exec(3) family of functions since you need to fork the process to a child for the parent process to create successful timing. Hence I used Perl with the Time::HiRes library which is a wrapper to &lt;time.h&gt; and &lt;sys/time.h&gt;. Later on, I found out that C itself has the system(3) functioin in &lt;stdlib.h&gt;</p>
+<p>Performance-wise you can see that C has a much faster runtime when the program was being invoked. But you can see in the graph above that Perl has much more consistent values so its standard deviation is lower than C. When I tested both programs for my data-intensive computing experiments, I get better results with the Perl utility! Perhaps I forgot to do all the magic the system function in Perl does in my C implementation?</p>
+<p>Here is my Perl code:</p>
+<pre><code>&lt;code&gt;#!/usr/bin/perl
+
+use Time::HiRes qw ( tv_interval gettimeofday );
+
+$start = [gettimeofday];
+system @ARGV;
+
+$elapsed = tv_interval ( $start );
+print $elapsed, &quot;\n&quot;;&lt;/code&gt;</code></pre>
+<p>Here is my C implementation:</p>
+<pre><code>&lt;code&gt;#include 
+#include 
+
+#include 
+#include 
+
+
+int main(int argc, char* argv[])
+{
+	struct timeval start, end, diff;
+	gettimeofday(&amp;start, NULL);
+	char* command = malloc( sizeof(argv) );
+	int i;
+	sprintf(command, &quot;%s&quot;, argv[1]);
+	for( i = 2; i &lt; argc; i++ )
+	{
+		sprintf(command, &quot;%s %s&quot;, command, argv[i]);
+	}
+	system(command);
+	gettimeofday(&amp;end, NULL);
+	timersub(&amp;end, &amp;start, &amp;diff);
+	printf(&quot;%d.%06d\n&quot;, diff.tv_sec, diff.tv_usec);
+	return 0;
+}&lt;/code&gt;</code></pre>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

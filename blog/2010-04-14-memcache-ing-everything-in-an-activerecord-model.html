@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>memcache-ing everything in an ActiveRecord model. - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>memcache-ing everything in an ActiveRecord model.</h1>
+  <p>2010 April 14</p>
+
+  <section>
+    <p>I was writing a script that was interactive with a database. The script was being invoked 400 times by a java program. It wasn’t too happy forking too many processes at a time. First I thought that mysql can only handle so many remote connections. Here is my attempt to reduce database load to almost 0 percent.</p>
+<p><a href="http://github.com/defunkt/cache_fu">cache_fu</a> was too dependent on being installed in Rails environment. Commenting out the code which referred to Rails variables made the ruby interpreter not complain. But according to the memcached server logs, nothing was being cached at all! I ended up using the low-level access API <a href="http://blog.evanweaver.com/files/doc/fauna/memcached/files/README.html">fauna</a>.</p>
+<p>Wrapping all the ActiveRecord::Base.find…() operations in the fauna-documented recipe, all of the SELECT * statements are now being cached. But the problem that remains is that the models still make ‘SHOW FIELDS..’ queries to the database whenever the object is first invoked. And since the script is being invoked 400 times, only bandwidth and round trip times were saved by the caching effort.</p>
+<p>I poked through the metaprogramming examples in the pick-axe book and resulted to overriding my models like this:</p>
+<p>`[sourcecode lang=“ruby”] require ‘memcached’ require ‘digest/md5’ require ‘active_record’</p>
+<p>class Variation &lt; ActiveRecord::Base def self.digest Digest::MD5.hexdigest(self.to_s).to_s end</p>
+<p>def self.columns=(cached_columns) <span class="citation" data-cites="cached_columns">@cached_columns</span>= cached_columns def self.columns <span class="citation" data-cites="cached_columns">@cached_columns</span> end <span class="citation" data-cites="cached_columns">@cached_columns</span> end end</p>
+<p>cache = Memcached.new begin Variation.columns = cache.get(Variation.digest) rescue Memcached::NotFound Variation.columns cache.set(Variation.digest, Variation.columns) end cache = nil</p>
+<p>`</p>
+<p>Now everything is cached!</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

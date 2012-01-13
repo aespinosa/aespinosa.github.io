@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Adding git-svn support from source - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Adding git-svn support from source</h1>
+  <p>2009 January 25</p>
+
+  <section>
+    <p>Having workstations where you don’t have root access either means contacting support for installation or building your own software from source to get the latest version.</p>
+<p>I started using <a href="http://git-scm.org">git</a> for code produced in my work. The build was successful with a simple “./configure; make ; make install” series of steps except for supporting access to subversion repositories. It was looking for the perl module <em>SVN::Core</em> to be able to function successfully. Googling about it will land you to the <a href="http://search.cpan.org/~mschwern/Alien-SVN-1.4.6.0/lib/Alien/SVN.pm"><em>Alien::SVN</em> CPAN module page</a>. Its dependencies can be installed with the standard “install Module::Name” invocation in the CPAN shell. But the main package does not properly install in this environment. It is probably because of the tarball not containing the standard <em>Makefile.PL</em>. It has <em>Build.PL</em> instead. This script generates the Build that compiles the subversion library and its bindings. Then it generates a <em>Makefile</em> from <em>Makefile.PL</em> in the _src/subversion/subversion/bindings/swig/perl/native _directory. Below is the output of the script:</p>
+<p>[sourcecode light=“true”] [Alien-SVN-1.4.6.0]$ ./Build Running make Running make swig-pl-lib make: Nothing to be done for `swig-pl-lib’. Running /usr/bin/perl Makefile.PL INSTALLDIRS=site Writing Makefile for SVN::_Core Writing Makefile.client for SVN::_Client Writing Makefile.delta for SVN::_Delta Writing Makefile.fs for SVN::_Fs Writing Makefile.ra for SVN::_Ra Writing Makefile.repos for SVN::_Repos Writing Makefile.wc for SVN::_Wc Running make gcc -c -I$HOME/local/include/apr-0 …</p>
+<p>The command <em>/usr/bin/perl Makefile.PL INSTALLDIRS=site</em> generates a build environment to install in_ /usr_. This is not favorable for installation in userspace since you do not have permission to write on that directory. So this command will be rerun /<em>usr/bin/perl Makefile.PL PREFIX=<span class="math inline">\(USERDIR_, where _\)</span>USERDIR</em> is the destination directory you want to.</p>
+<p>Now you can successfully clone subversion repositories!</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

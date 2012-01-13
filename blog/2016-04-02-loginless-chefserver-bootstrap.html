@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Bootstrapping a Chef Server headlessly - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Bootstrapping a Chef Server headlessly</h1>
+  <p>2016 April  2</p>
+
+  <section>
+    <p>The steps for installing a standalone Chef server<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> involves downloading the admin and validation private keys to complete the setup. This means that you need some file transfer mechanism from your server like SSH. I will show below how to skip these steps and use existing private keys that is already installed in your Chef workstation instead. The advantage of this approach is that you only have a single key for all your Chef server deployments including a Hosted Chef server account.</p>
+<h2 id="preparation">Preparation</h2>
+<p>We assume that you already have your workstation’s client.pem and validation.pem downloaded. Obtain their public keys and save them for later</p>
+<pre><code>$ openssl rsa -in ~/.chef/client.pem -pubout &gt; client.pub
+$ openssl rsa -in ~/.chef/validation.pem -pubout &gt; validation.pub</code></pre>
+<p>For truly loginless setups, you can safely paste these public keys in the startup scripts/ user data field on your Cloud provider.</p>
+<p>After following steps 1-4<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, use the following steps instead:</p>
+<h2 id="setup-the-user">Setup the user</h2>
+<ol type="1">
+<li><p>Create the admin user but redirect the private key destination to <code>/dev/null</code>. We don’t need it at all</p>
+<pre><code> $ chef-server-ctl user-create username FirstName LastName \
+     email@domain password -f /dev/null</code></pre></li>
+<li><p>Delete the use client key.</p>
+<pre><code> $ chef-server-ctl delete-user-key username default</code></pre></li>
+<li><p>Finally, add a default user key again with the <code>client.pub</code> string we generated earlier.</p>
+<pre><code> $ chef-server-ctl add-user-key username --key-name default \
+     --pub-key-path client.pub</code></pre></li>
+</ol>
+<h2 id="setup-the-organization">Setup the organization</h2>
+<p>We will use a similar approach for the organization’s validation key.</p>
+<ol type="1">
+<li><p>Create the organization and send its private key to <code>/dev/null</code> as well.</p>
+<pre><code>$ chef-server-ctl org-create orgname OrgFullName -a username -f /dev/null</code></pre></li>
+<li><p>Delete the validation client key. By default the name of the validation client is <code>&lt;orgname&gt;-validator</code>.</p>
+<pre><code>$ chef-server-ctl delete-client-key orgname orgname-validator default</code></pre></li>
+<li><p>Add the validation public key we extracted earlier.</p>
+<pre><code>$ chef-server-ctl add-client-key orgname orgname-validator \
+    --key-name default --pub-key-path validation.pub</code></pre></li>
+</ol>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://docs.chef.io/install_server.html#standalone.html" class="uri">https://docs.chef.io/install_server.html#standalone.html</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><a href="https://docs.chef.io/install_server.html#standalone.html" class="uri">https://docs.chef.io/install_server.html#standalone.html</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

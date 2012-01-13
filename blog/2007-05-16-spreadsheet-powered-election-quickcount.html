@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Spreadsheet-powered Election Quickcount - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Spreadsheet-powered Election Quickcount</h1>
+  <p>2007 May 16</p>
+
+  <section>
+    <p>Last Monday (May 14), millions of Filipinos went to various public schools (precints) to exercise their right of suffrage. It was election time for local officials like mayors, councilors, board members, governors and also senators. Since the mid 80’s the National Movement for Free Elections (Namfrel) conducts parallel quickcounts. It is the only institution accredited by the Commission on Elections (Comelec) to conduct such an election.</p>
+<p>My father listed me as a Namfrel volunteer in our local province in Bataan. Prior to the elections, we received MS Excel spreadsheets as a tool for the quickcount operation. We totally have no idea on how to deploy the application. From a system adminstrator point of view, getting the thing to work was a nightmare. Namfrel admits their <a href="http://technology.inquirer.net/infotech/infotech/view_article.php?article_id=66065">“Software Problems”</a> according to an <a href="http://www.inquirer.net">Inquirer</a> article. Of course volunteers <em>have</em> to modify the programs since we received a <em>generic template</em> with the logo of Muntinlupa City in the upper right corner of the spreadsheet. Some of the things we did prior to the election:</p>
+<ol type="1">
+<li><p>Encode all the precints in the national, local, and partylist spreadsheets. A user’s manual for the three files were included on how to do this operation. We received a list of precints as PDF document so we performed some string processing before we were able to cut-and-paste to the spreadsheets.</p></li>
+<li><p>Encode the local officials</p></li>
+<li><p>Encode data from Election Returns (ER). This will then generate another spreadsheet data file (ER-data). It was not included in the documentation what the “POST TRANSACTION” will do. This is necessary information for volunteers who are maintaining the system.</p></li>
+<li><p>Consolidate generated-data. The spreadsheet file requires where in the local SMB network the generated (ER-data) are located. This will then merge all of the files into a single report for a particular province. Upon personally encountering such system problems, I have thought of system specific documentation (an INSTALL file for the archive) .But I don’t have the MS Excel spreadsheets right now, so there will be minimal screenshots. Assume a hypothetical provincial race election.</p></li>
+<li><p>Each town will generate a single election return data. Therefore the three spreadsheet files (LOC-OQC2K7.xls, NAT-OQC2K7.xls, PAT-OQC2K7.xls) should be installed in its own “Town Folder”. For example, a Province _X _has 10 towns labeled _T[0-9]. _If the provincial headquarters, we can install the three spreadsheets in two SMB shares per computer as follows * \computer0 and \computer0</p></li>
+</ol>
+<pre><code>* \\computer1\T2 and \\computer1\T3
+* \\computer2\T4 and \\computer2\T5
+* \\computer3\T6 and \\computer3\T7
+* \\computer4\T8 and \\computer4\T9</code></pre>
+<ol start="2" type="1">
+<li>Follow instructions in *Manual.pdf to encode precints and candidates.</li>
+<li>Add the following to the Consolidation Manual: * Based on how you have setup file sharing services, enter the mounts in item [1]</li>
+</ol>
+<p>Technorati Tags: <a href="http://technorati.com/tag/election">election</a>, <a href="http://technorati.com/tag/philippines">philippines</a>, <a href="http://technorati.com/tag/excel">excel</a>, <a href="http://technorati.com/tag/spreadsheet">spreadsheet</a>, <a href="http://technorati.com/tag/quickcount">quickcount</a>, <a href="http://technorati.com/tag/namfrel">namfrel</a></p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

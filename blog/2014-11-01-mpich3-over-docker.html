@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Distributed High Performance Computing Fortran applications over Docker - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Distributed High Performance Computing Fortran applications over Docker</h1>
+  <p>2014 November  1</p>
+
+  <section>
+    <p>I will use this page as a notepad for my thoughts and notes for participating in Docker’s Global Hackday event in Tokyo [1].</p>
+<p>I’ll be using MPICH [2] and try to run an mpi-based app over containers. Code will be posted on Github (<a href="http://github.com/aespinosa/mpich-docker">aespinosa/mpich-docker</a>)</p>
+<h2 id="update-2014-11-03-1505">Update: 2014-11-03 15:05</h2>
+<p>Working demo in <a href="http://mpich-demo.allan.wikonec.com" class="uri">http://mpich-demo.allan.wikonec.com</a>. Click on the <code>Launch_Node</code> job first. Then launch all the compute nodes by clicking each job’s <code>Build</code> button.</p>
+<h2 id="workflow">Workflow</h2>
+<ul>
+<li><p>Building dependencies for a lean docker container <a href="https://packages.debian.org/jessie/mpich" class="uri">https://packages.debian.org/jessie/mpich</a>.</p></li>
+<li><p>Prepare the docker image with the your MPI program. I write a sample in [4].</p></li>
+</ul>
+<pre><code>mpif90 /src/hello.f90 -o /app/hello</code></pre>
+<h2 id="running-mpi">Running mpi</h2>
+<p>Two parts of an mpich run [3]:</p>
+<ol type="1">
+<li>Launch node runs <em>UI Process</em> via mpiexec. This listens to a <em>control port</em></li>
+</ol>
+<pre><code>docker run --rm=true \
+  -e MPIEXEC_PORT_RANGE=1000:1000 --expose=1000 \
+  -h master --name master test \
+  mpiexec -hosts one,two  -launcher manual -n 2 /hello</code></pre>
+<ol start="2" type="1">
+<li>Compute node runs <em>Proxy Executable</em> and connects to UI Process (where the jobs are actually run) via <code>hydra_pmi_proxy</code></li>
+</ol>
+<pre><code>$ docker run --rm=true --link master:master -h one test \
+  hydra_pmi_proxy --control-port master:1000 \
+  --rmk user --launcher manual --demux poll --pgid 0 --retries 10 --usize -2 \
+  --proxy-id 0
+$ docker run --rm=true --link master:master -h two test \
+  hydra_pmi_proxy --control-port master:1000 \
+  --rmk user --launcher manual --demux poll --pgid 0 --retries 10 --usize -2 \
+  --proxy-id 1</code></pre>
+<h2 id="next-steps">Next steps</h2>
+<p>Write a custom hydra launcher instead of the manual one. Maybe a worthwhile project to work one.</p>
+<h2 id="abstract-write-up-for-hackday-entry">Abstract write-up for Hackday entry</h2>
+<p>I demonstrate how to run a distributed Fortran application in Docker. For this demo, I will show how to build and run a Fortran90 program that computes the value of Pi using a distributed monte carlo computation implemented in MPI. I go into the details on how the mpich implementation of MPI works and how to get it running on Docker by descriptiong mpich (hydra)’s architecture. I then show the sourcecode contains in GitHub that Dockerfiles to build the application that uses the mpich MPI implementaton.</p>
+<p>Full description of this hackday entry is in <a href="http://aespinosa.github.io/blog/2014-11-01-mpich3-over-docker.html" class="uri">http://aespinosa.github.io/blog/2014-11-01-mpich3-over-docker.html</a>.</p>
+<h2 id="references">References</h2>
+<ol type="1">
+<li><a href="http://connpass.com/event/9491/" class="uri">http://connpass.com/event/9491/</a></li>
+<li><a href="http://www.mpich.org" class="uri">http://www.mpich.org</a></li>
+<li><a href="http://wiki.mpich.org/mpich/index.php/Hydra_Process_Management_Framework" class="uri">http://wiki.mpich.org/mpich/index.php/Hydra_Process_Management_Framework</a></li>
+<li><a href="https://github.com/aespinosa/mpich-docker/tree/master/test" class="uri">https://github.com/aespinosa/mpich-docker/tree/master/test</a></li>
+</ol>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

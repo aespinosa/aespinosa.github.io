@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Workarounds to converge test-kitchen on Windows guests - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Workarounds to converge test-kitchen on Windows guests</h1>
+  <p>2014 May  8</p>
+
+  <section>
+    <p>Below are a few hacks I did to get “test-kitchen converge” runs to test my windows cookbooks.</p>
+<h2 id="invoke-the-cmd.exe-interpreter-explicitly">Invoke the cmd.exe interpreter explicitly</h2>
+<p>By default test-kitchen relies on ssh to run commands. Logging in via cygwin-ssh gives you a plain bourne shell. This has its own issues in running the chef-client.</p>
+<p>EDIT: I need to test this workflow again on Vagrant 1.6.x that has native support for windows guest.</p>
+<pre><code>--- a/lib/kitchen/provisioner/chef_zero.rb   2014-05-08 00:12:12.971562743 +0900
++++ b/lib/kitchen/provisioner/chef_zero.rb   2014-05-08 00:10:44.612041428 +0900
+@@ -69,7 +69,7 @@
+         end
+
+         if local_mode_supported?
+-          [&quot;#{sudo('chef-client')} -z&quot;].concat(args).join(&quot; &quot;)
++          [&quot;#{sudo('cmd /c chef-client')} -z&quot;].concat(args).join(&quot; &quot;)
+         else
+           [
+             chef_client_zero_env,</code></pre>
+<p>Related blockers.</p>
+<ul>
+<li>Ticket concerning invoking the chef-client script inside cygwin <a href="https://tickets.opscode.com/browse/CHEF-4290" class="uri">https://tickets.opscode.com/browse/CHEF-4290</a></li>
+<li>Main windows issue tracker for test-kitchen <a href="https://github.com/test-kitchen/test-kitchen/issues/158" class="uri">https://github.com/test-kitchen/test-kitchen/issues/158</a></li>
+</ul>
+<h2 id="change-the-base-path">Change the base path</h2>
+<p>Otherwise the chef-client can’t recognize the paths it receives from test-kitchen.</p>
+<pre><code>---
+provisioner:
+  name: chef_zero
+  sudo: false
+  root_path: c:/Windows/Temp</code></pre>
+<h2 id="references">References</h2>
+<ol type="1">
+<li>Windows 2012 R2 base image used for testing <a href="https://github.com/joefitzgerald/packer-windows" class="uri">https://github.com/joefitzgerald/packer-windows</a></li>
+</ol>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

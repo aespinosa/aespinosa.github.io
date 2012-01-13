@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Faster and Reproducible Ruby Development Workflows - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Faster and Reproducible Ruby Development Workflows</h1>
+  <p>2015 May 16</p>
+
+  <section>
+    <p>If you’re doing development and cloning ruby based repositories, sometimes you want to cleanup your ruby gems spec or vendor/bundle directory. It is important to do a clean ‘bundle install’ so you won’t experience “it works on my machine” syndrome.</p>
+<p>However, downloading gems from rubygems.org all the time is not the best experience in the world if you have a large Gemfile or rubygems.org is down itself.</p>
+<p>Java developers have had this feature in maven with ‘proxy repositories’. Fortunately, you can do this same thing with <a href="https://sonatype.org/nexus">Sonatype Nexus</a>. Following the described documentation on proxy gem repositories<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, Have something like this configured for rubygems.org:</p>
+<pre><code>Repository ID: rubygems
+Repository Name: rubygems.org
+Repository Type: proxy
+Repository Policy: undefined
+Repository Format: rubygems
+Contained in groups: 
+
+Remote URL: https://rubygems.org</code></pre>
+<p>Likewise, you can have this in your ~/.gemrc</p>
+<pre><code>---
+:sources:
+- http://127.0.0.1:8081/nexus/content/repositories/rubygems/</code></pre>
+<p>And ~/.bundle/config</p>
+<pre><code>---
+BUNDLE_MIRROR__HTTPS://RUBYGEMS__ORG/: http://nexus.dev:8081/nexus/content/repositories/rubygems/</code></pre>
+<p>Now, all gem downloads will be cached in nexus. The next time you do a ‘git clean -fdx &amp;&amp; bundle install’, you don’t have to wait to download the Internet to get your Ruby builds working. This setup is useful especially for CI servers like Jenkins so that the next subsequent build times will be siginificantly less.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="http://books.sonatype.com/nexus-book/reference/ruby-proxying-registries.html" class="uri">http://books.sonatype.com/nexus-book/reference/ruby-proxying-registries.html</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

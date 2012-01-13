@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Tweak your del.icio.us most visited sites - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Tweak your del.icio.us most visited sites</h1>
+  <p>2008 June 19</p>
+
+  <section>
+    <p>The <a href="http://del.icio.us">del.icio.us</a> <a href="https://addons.mozilla.org/en-US/firefox/addon/3615">Firefox add-on</a> provides very neat integration into the latest version of Firefox three. I like the synchronization between local bookmarks, shortcuts, etc. The “most visited” tab actually counts how many times you clicked a bookmark and updates the toolbar respectively. The only problem is that for private bookmarks like the ones that initiate javascript link calls do not update the bookmark counters.</p>
+<p>One of my favorite links is the <a href="http://www.citeulike.org">citeulike.org</a>’s add to library shortcuts which initiates a javascript call containing the current url on your browser such as an overview page of a journal article. This frustrated me for a while but after “grep”-ing my Firefox profile directory for the name of my citeulike bookmark, I edited the citeulike entry in my ~/.mozilla/firefox/$PROFILENAME/delcious.rdf:</p>
+<pre><code>&lt;code&gt;
+
+    bibliography
+    citation
+    bookmarking
+    research
+    reference
+    academic
+    tagging
+    300
+    Tue Jul 03 07:49:43 2007 +000000
+    Tue Jul 03 07:49:43 2007 +000000
+
+&lt;/code&gt;</code></pre>
+<p>The code entry above shows the XML entry for a bookmark. Simply change the “NC:VisitCount” tag to a very high value and it will appear at the top of your del.icio.us toolbar most-visited tab.</p>
+<p>Enjoy your new favorite bookmark!</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

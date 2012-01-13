@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Lecture notes on iteration - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Lecture notes on iteration</h1>
+  <p>2007 July 11</p>
+
+  <section>
+    <p>For my CE 21 class. The problem discussed earlier was, draw a triangle of stars given the length for a side of the triangle <em>n</em>. It can be illustrated as follows for <em>n = 3</em>.</p>
+<blockquote>
+<p><code><em> </em> <em> </em> * *</code></p>
+</blockquote>
+<p>The next task is to center the triangle:</p>
+<blockquote>
+<ul>
+<li><ul>
+<li><ul>
+<li><hr /></li>
+</ul></li>
+</ul></li>
+</ul>
+</blockquote>
+<p>Then we want to be able to print a diamond</p>
+<blockquote>
+<p><code> <em> </em> <em> </em> * <em> </em> <em> </em></code></p>
+</blockquote>
+<p>This C++ code is one of the solutions to the problem:</p>
+<blockquote>
+<p><code>#include int main() { int n; std::cin &gt;&gt; n; int i = 1; // upper triangle while( i &lt;= n ) { int space = n - i; for(int j = 1 ; j &lt;= space ; j++ ) { std::cout &lt;&lt; " “; } int j = 1; while( j &lt;= i ) { std::cout &lt;&lt;”* “; j++; } std::cout &lt;&lt; std::endl; i++; } // lower triangle i = n - 1; while( i &gt;= 1 ) { int space = n - i; for(int j = 1 ; j &lt;= space ; j++ ) { std::cout &lt;&lt;” “; } int j = 1; while( j &lt;= i ) { std::cout &lt;&lt;”* "; j++; } std::cout &lt;&lt; std::endl; i–; } return 0;}</code></p>
+</blockquote>
+<p>For the homework, answer the Challenge section of the <a href="http://allan.88-mph.net/pub/teaching/03-iteration.odp">lecture slides</a> on iterations:</p>
+<ul>
+<li><p>Draw a pine tree with 3 sections</p></li>
+<li><p>Each section should have <em>n</em> lines of stars</p></li>
+<li><p>The start of the next section should have one less star than the end of the previous section</p></li>
+<li><p>Add <em>n</em> lines of single asterisks for a stand</p></li>
+</ul>
+<p>Example for <em>n = 3:</em></p>
+<blockquote>
+
+</blockquote>
+<blockquote>
+<pre><code>&lt;code&gt;      *
+     * *
+    * * *
+     * *
+    * * *
+   * * * *
+    * * *
+   * * * *
+  * * * * *
+      *
+      *
+      *&lt;/code&gt;</code></pre>
+</blockquote>
+<p>Technorati Tags: <a href="http://technorati.com/tag/ce21">ce21</a>, <a href="http://technorati.com/tag/c++">c++</a>, <a href="http://technorati.com/tag/programming">programming</a>, <a href="http://technorati.com/tag/loops">loops</a>, <a href="http://technorati.com/tag/iterations">iterations</a></p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

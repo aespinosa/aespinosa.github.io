@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Your whole Jenkins configuration in Code.. no XML!! - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Your whole Jenkins configuration in Code.. no XML!!</h1>
+  <p>2016 March 31</p>
+
+  <section>
+    <p>There various pieces in configuration management to manage a Jenkins installation. You have the Job DSL plugin <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, a Chef cookbook <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, the Script Console <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. There are others you can use, but I will focus on using the three to provide a zero-to-Jenkins setup without clicking on forms or writing XML files. I will make details on the following steps to get it done:</p>
+<ol type="1">
+<li>Secure Jenkins</li>
+<li>Update plugins</li>
+<li>Disable unnecessary plugins</li>
+<li>Install other plugins</li>
+<li>Create a seed job</li>
+</ol>
+<h2 id="secure-jenkins">Secure Jenkins</h2>
+<p>First we setup Chef to load a private key so that the chef-client can be authenticated when connecting to Jenkins. In the code below, this uses the chef-client’s client key:</p>
+<pre><code>ruby_block 'load jenkins credential' do
+  block do
+    require 'openssl'
+    require 'net/ssh'
+
+    key = ::OpenSSL::PKey::RSA.new ::File.read Chef::Config[:client_key]
+
+    node.run_state[:jenkins_private_key] = key.to_pem
+
+    jenkins = resources('jenkins_user[chef]')
+    jenkins.public_keys [&quot;#{key.ssh_type} #{[key.to_blob].pack('m0')}&quot;]
+  end
+end</code></pre>
+<p>Next is to create a Jenkins user for the chef-client by and specify its public key from the private key above.</p>
+<pre><code>jenkins_user 'chef' do
+  id &quot;chef@#{Chef::Config[:node_name]}&quot;
+  full_name &quot;Chef&quot;
+end</code></pre>
+<p>Finally we lock down Jenkins to authenticate with GitHub:</p>
+<pre><code>import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.GithubSecurityRealm;
+
+Jenkins.instance.securityRealm = new GithubSecurityRealm(
+    'https://github.com', 'https://api.github.com', 'x', 'y')
+
+permissions = new hudson.security.GlobalMatrixAuthorizationStrategy()
+
+permissions.add(Jenkins.ADMINISTER, 'aespinosa')
+permissions.add(Jenkins.ADMINISTER, '#{resources('jenkins_user[chef]').id}')
+permissions.add(hudson.model.View.READ, 'anonymous')
+permissions.add(hudson.model.Item.READ, 'anonymous')
+permissions.add(Jenkins.READ, 'anonymous')
+
+Jenkins.instance.authorizationStrategy = permissions
+
+Jenkins.instance.save()</code></pre>
+<h2 id="update-plugins">Update plugins</h2>
+<p>When using the LTS version of Jenkins, some of the plugins are out of date. The following Groovy script:</p>
+<p>First, we have to get the list of latest packages from the update center. The <code>not_if</code> guard makes sure that we only check for updates once a day even if the chef-client tried to converge every 30 minutes.</p>
+<pre><code>jenkins_script 'get list of latest plugins' do
+  command &lt;&lt;-eos.gsub(/^\s+/, '')
+    pm = jenkins.model.instance.pluginManager
+    pm.doCheckUpdatesServer()
+  eos
+
+  not_if do
+    update_frequency = 86_400 # daily
+    update_file = '/var/lib/jenkins/updates/default.json'
+    ::File.exists?(update_file) &amp;&amp;
+      ::File.mtime(update_file) &gt; Time.now - update_frequency
+  end
+end</code></pre>
+<p>Next, we finally download the plugins. Note the check between the version in the <code>updateCenter</code> and the <code>pluginManager</code> so that updates are made idempotently.</p>
+<pre><code>import jenkins.model.Jenkins;
+
+pm = Jenkins.instance.pluginManager
+
+uc = Jenkins.instance.updateCenter
+updated = false
+pm.plugins.each { plugin -&gt;
+  if (uc.getPlugin(plugin.shortName).version != plugin.version) {
+    update = uc.getPlugin(plugin.shortName).deploy(true)
+    update.get()
+    updated = true
+  }
+}
+if (updated) {
+  Jenkins.instance.restart()
+}</code></pre>
+<h2 id="install-plugins">Install plugins</h2>
+<p>Next in the plugin setup phase, we disable the plugins we don’t need and install only the plugins we need. This is similar to what I described earlier in a <a href="../blog/2014-10-17-jenkins-plugin-management-in-groovy.html">previous post</a>.</p>
+<pre><code>import jenkins.model.Jenkins;
+
+pm = Jenkins.instance.pluginManager
+
+uc = Jenkins.instance.updateCenter
+pm.plugins.each { plugin -&gt;
+plugin.disable()
+}
+
+deployed = false
+def activatePlugin(plugin) {
+if (! plugin.isEnabled()) {
+  plugin.enable()
+  deployed = true
+}
+
+plugin.getDependencies().each {
+  activatePlugin(pm.getPlugin(it.shortName))
+}
+}
+
+[&quot;git&quot;, &quot;workflow-aggregator&quot;, &quot;github-oauth&quot;, &quot;job-dsl&quot;, &quot;extended-read-permission&quot;].each {
+if (! pm.getPlugin(it)) {
+  deployment = uc.getPlugin(it).deploy(true)
+  deployment.get()
+}
+activatePlugin(pm.getPlugin(it))
+}
+
+if (deployed) {
+Jenkins.instance.restart()
+}</code></pre>
+<h2 id="create-the-seed-job">Create the Seed job</h2>
+<p>The Job DSL plugin lets us specify our Jenkins job. But how to you set up the seed job automatically? The Groovy script below uses the Script console to create the Seed Job. The <code>samples.groovy</code> file can then be deployed in any way you see fit like Git or as a Chef File resource.</p>
+<pre><code>import jenkins.model.Jenkins;
+import hudson.model.FreeStyleProject;
+
+job = Jenkins.instance.createProject(FreeStyleProject, 'seed-job')
+job.displayName = 'Seed Job'
+
+builder = new javaposse.jobdsl.plugin.ExecuteDslScripts(
+  new javaposse.jobdsl.plugin.ExecuteDslScripts.ScriptLocation(
+      'false',
+      'samples.groovy',
+      null),
+  false,
+  javaposse.jobdsl.plugin.RemovedJobAction.DELETE, 
+  javaposse.jobdsl.plugin.RemovedViewAction.DELETE, 
+  javaposse.jobdsl.plugin.LookupStrategy.JENKINS_ROOT
+)
+job.buildersList.add(builder)
+
+job.save()</code></pre>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin" class="uri">https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><a href="https://supermarket.chef.io/cookbooks/jenkins" class="uri">https://supermarket.chef.io/cookbooks/jenkins</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p><a href="https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console" class="uri">https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

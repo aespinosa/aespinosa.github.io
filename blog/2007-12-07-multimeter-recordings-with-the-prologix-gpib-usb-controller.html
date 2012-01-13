@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Multimeter recordings with the Prologix GPIB-USB controller - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Multimeter recordings with the Prologix GPIB-USB controller</h1>
+  <p>2007 December  7</p>
+
+  <section>
+    <p><a href="http://www.flickr.com/photos/yecartes/2092552825/"><img src="http://farm3.static.flickr.com/2159/2092552825_dc74629f33.jpg" alt="Prologix GPIB-USB controller" /></a></p>
+<p>The department has quite a number of GPIB-interfaceable intstruments but the problem is that we no longer have a workstation with the legacy ISA card slots. We conducted an archaeology expedition in one of our laboratories and found cards in mint condition! Deniz Wong of the Chemistry department showed me some of their toys and <em>their only</em> workstation with the interface card. Even though this machine is very old, it still has great value to their lab because of its capability to instrument with their equipment.</p>
+<p>We recently bought two <a href="http://prologix.googlepages.com/home">Prologix v4.2 GPIB-USB controllers</a>. This removed the need to find legacy workstations to be able to log data. All we need now are USB ports. The controller is basically an IEEE 488 to USB B adapter. Version 2.6 of the Linux kernel has a built in driver for it (ftd_sio). In my Gutsy workstation, it creates a serial device name “ttyUSB0”. Using serial communications software, I was able to talk to the device.</p>
+<p><a href="http://www.flickr.com/photos/yecartes/2092546737/"><img src="http://farm3.static.flickr.com/2304/2092546737_0e4f06e290.jpg" alt="Test setup" /></a></p>
+<p>To test the controller, I tried to record voltage readings from a 5-18 volt power supply as shown in the Figure above. The numerical reading below is the current DC level of one of the power supplies made by students in the ECE 21 Workshop class. The controller was setup in <em>device mode</em> or <em>listen mode</em> which as activated using the “++mode 0” command in the serial terminal. The <a href="http://www.home.agilent.com/agilent/product.jspx?cc=US&amp;lc=eng&amp;pageMode=OV&amp;pid=1000001295%3Aepsg%3Apro&amp;ct=PRODUCT&amp;id=1000001295%3Aepsg%3Apro">HP 34401A</a> multimeter was then set to <em>talk mode</em> to send data to the device controller. According to the manual, the HP-IB address should be set to address 31 to activate talk mode. HP-IB was also selected as the interface in the settings instead of the default RS-232. To simulate fluctuating voltage reading, I swung the resistance knob to vary the data recordings. Below is a plot of the terminal session:</p>
+<p><a href="http://www.flickr.com/photos/yecartes/2092546745/"><img src="http://farm3.static.flickr.com/2012/2092546745_cd1f21c468.jpg" alt="Sample HP 34401A log" /></a></p>
+<p>The next would be to consider the sampling time in obtaining the data to incorporate a voltage versus time reading. These recordings will be useful in obtaining the natural response of the circuits.</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->

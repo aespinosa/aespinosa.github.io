@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Building (hackishly) rubygems from CMake-based tarballs - Allan Espinosa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,
+      maximum-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+<body>
+
+<header>
+  <h1> Allan Espinosa </h1>
+</header>
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../blog/">Blog</a></li>
+    <li><a href="../presentations.html">Publications</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<article class="post">
+  <h1>Building (hackishly) rubygems from CMake-based tarballs</h1>
+  <p>2012 January 19</p>
+
+  <section>
+    <p>Here is my attempt was making a user-space bundle install of the SimGrid’s Ruby bindings. I created a gemspec for the source tarball in a hackish way. Basically I just made a system “cmake .” call in the extconf.rb file when building the gem extensions. Here’s the result:</p>
+<pre><code>$ cat Gemfile
+source :rubygems
+
+gem &quot;simgrid-ruby&quot;
+$ SIMGRID_ROOT=/opt/simgrid-3.6.2 bundle install --path vendor
+...
+...
+make install
+[ 66%] Built target SG_ruby
+[100%] Built target SG_rubydag
+Install the project...
+-- Install configuration: &quot;&quot;
+CMake Error at cmake_install.cmake:47 (FILE):
+ file cannot create directory: /usr/local/ruby/1.9.1/x86_64-linux.  Maybe
+ need administrative privileges.
+
+
+make: *** [install] Error 1
+
+-edit Gemfile
+$ cat Gemfile
+source :rubygems
+
+gem &quot;simgrid-ruby&quot;, :path =&gt; &quot;~/tmp/simgrid-ruby&quot; # where I have
+simgrid-ruby.git cloned
+$ SIMGRID_ROOT=/opt/simgrid-3.6.2 bundle install
+/home/aespinosa/LocalDisk/opt/ruby/lib/ruby/1.9.1/yaml.rb:56:in `':
+Using simgrid-ruby (0.0.4890e3f) from source at ~/tmp/simgrid-ruby
+Using bundler (1.0.21)
+Updating .gem files in vendor/cache
+ * simgrid-ruby at `~/tmp/simgrid-ruby` will not be cached.
+Your bundle is complete! It was installed into ./vendor
+$ cd vendor/ruby/1.9.1/gems/simgrid-ruby-0.0.4890e3f/examples/
+$ bundle exec ruby MasterSlave.rb
+Tremblay:Master:(1) 0.000000] [ruby/INFO] args[0]=20
+[Tremblay:Master:(1) 0.000000] [ruby/INFO] args[1]=50000000
+[Tremblay:Master:(1) 0.000000] [ruby/INFO] args[2]=1000000
+[Tremblay:Master:(1) 0.000000] [ruby/INFO] args[3]=4
+[Tremblay:Master:(1) 0.000000] [ruby/INFO] Master Sending Task_0 to
+slave 0 with Compute Size 50000000.0
+[Tremblay:Master:(1) 0.215872] [ruby/INFO] Master Sending Task_1 to
+slave 1 with Compute Size 50000000.0
+[Tremblay:Master:(1) 0.381834] [ruby/INFO] Master Sending Task_2 to
+slave 2 with Compute Size 50000000.0
+...
+...
+[Bourassa:Slave:(2) 6.234851] [ruby/INFO] Slave 'slave 0' done
+executing task Task_16.
+[Fafard:Slave:(4) 6.243210] [ruby/INFO] Slave 'slave 2' done executing
+task Task_18.
+[Ginette:Slave:(5) 6.759426] [ruby/INFO] Slave 'slave 3' done
+executing task Task_19.
+[Tremblay:Master:(1) 6.772657] [ruby/INFO] Master : Everything's Done
+Simulation time : 6.77266
+$</code></pre>
+<p>Sort of works! Basically since rubygems installed the entire manifest (I placed everything in the tarball) on the gem directory, the lib/<em>.so and lib/</em>.rb files somehow fall in place. Problems arise in the build when the gem installer cannot replace the RUBYARCHDIR string in the Makefile to install it in isolation (<a href="https://github.com/rubygems/rubygems/blob/master/lib/rubygems/ext/builder.rb" class="uri">https://github.com/rubygems/rubygems/blob/master/lib/rubygems/ext/builder.rb</a>)</p>
+<p>I made a fork of a repository with the gemspec package in https://github.com/aespinosa/simgrid-ruby . For now this hackish-setup satisfies my needs of a user-space installation of simgrid-ruby bindings.</p>
+  </section>
+</article>
+
+</main>
+
+<div id="others">
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Sidebar -->
+  <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-8408299806266445" data-ad-slot="7051680217"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<footer>
+  Last updated 2021 February 11
+</footer>
+
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+     Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58996975-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+</html>
+
+<!-- vim:set sts=4 -->
