@@ -1,0 +1,87 @@
+
+body {
+background: #fff;
+font-family: sans-serif;
+font-size: 11pt;
+color: #333333;;
+margin:  auto;
+width: 80%;
+text-align: justify;
+}
+
+img { border: none; }
+a { color: #26478A; text-decoration: none; }
+a:hover { text-decoration: underline; color : #000; }
+
+h1, h2, h3 {
+margin-top: 8pt;
+margin-bottom: 2pt;
+padding-bottom: 0pt;
+}
+
+cite {
+  font-style: normal;
+}
+cite:before {
+  content: "[";
+}
+cite:after {
+  content: "]";
+}
+
+ol.biblio {
+counter-reset: biblist;
+}
+ol.biblio li {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0em;
+  text-indent: -2em;
+}
+ol.biblio li:before {
+  content: "[" counter(biblist)"]  ";
+  counter-increment: biblist;
+}
+
+p, ol, li, dl {
+margin: 0pt;
+padding-bottom: 8pt;
+}
+
+hr {
+  display: none;
+}
+
+
+#header { 
+padding: 5pt;
+margin: 0pt;
+background: #26478A;
+}
+#header h1 {
+font-size: 20pt;
+color: #fff;
+}
+#header h2 {
+color: #ccc;
+font-size: 15px;
+margin-top: 0pt;
+}
+
+#intro {
+padding-top: 16pt;
+padding-left: 20pt;
+padding-right: 20pt;
+border: solid;
+border-color: #ccc;
+margin: 20pt;
+}
+
+
+#footer {
+border-top: solid #ccc;
+color: #333;
+font-size: 12pt;
+padding: 0 0 10px 0;
+margin-top: 20px;
+}
