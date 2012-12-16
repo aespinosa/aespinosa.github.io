@@ -4,8 +4,8 @@ background: #fff;
 font-family: sans-serif;
 font-size: 11pt;
 color: #333333;;
-margin:  auto;
-width: 80%;
+margin: auto;
+width: 70%;
 text-align: justify;
 }
 
@@ -53,16 +53,16 @@ hr {
 }
 
 
-#header { 
+header { 
 padding: 5pt;
 margin: 0pt;
 background: #26478A;
 }
-#header h1 {
+header h1 {
 font-size: 20pt;
 color: #fff;
 }
-#header h2 {
+header h2 {
 color: #ccc;
 font-size: 15px;
 margin-top: 0pt;
