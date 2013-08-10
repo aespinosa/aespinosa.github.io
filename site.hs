@@ -24,3 +24,15 @@ main = hakyll $ do
     match "index.html" $ do
         route idRoute
         compile copyFileCompiler
+
+    match "templates/*" $ compile templateCompiler
+
+    match "blog/posts/*" $ do
+      route $ setExtension ".html"
+      compile $ pandocCompiler
+        >>= loadAndApplyTemplate "templates/post.html" postContext
+
+postContext :: Context String
+postContext = 
+    dateField "date" "%Y %B %e" `mappend`
+    defaultContext
