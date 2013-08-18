@@ -1,12 +1,19 @@
+@import 'css/vendor/preboot.less';
 
 body {
-background: #fff;
-font-family: sans-serif;
-font-size: 11pt;
-color: #333333;;
-margin: auto;
-width: 70%;
-text-align: justify;
+  background: #fff;
+  font-family: sans-serif;
+  font-size: 11pt;
+  color: #333333;;
+  margin: auto;
+  width: @grid-float-breakpoint;
+  text-align: justify;
+}
+
+@media (max-width:  @grid-float-breakpoint) {
+  body {
+    width: 100%;
+  }
 }
 
 img { border: none; }
@@ -14,9 +21,9 @@ a { color: #26478A; text-decoration: none; }
 a:hover { text-decoration: underline; color : #000; }
 
 h1, h2, h3 {
-margin-top: 8pt;
-margin-bottom: 2pt;
-padding-bottom: 0pt;
+  margin-top: 8pt;
+  margin-bottom: 2pt;
+  padding-bottom: 0pt;
 }
 
 cite {
@@ -54,35 +61,82 @@ hr {
 
 
 header { 
-padding: 5pt;
-margin: 0pt;
-background: #26478A;
+  padding: 5pt;
+  margin: 0pt;
+  background: #26478A;
+  vertical-align: middle;
+  .make-row();
+
+  h1 {
+    font-size: 20pt;
+    color: #fff;
+    .make-column(6);
+    line-height: 80%;
+
+    small {
+      color: #ccc;
+      font-size: 10pt;
+      margin-top: 0pt;
+    }
+  }
+
+  ul {
+    .make-column(4);
+    .make-column-offset(2);
+
+    li {
+      display: inline-block;
+      padding: 5pt 2pt;
+      a {
+        color: #fff;
+        font-weight: bold;
+      }
+      a:hover {
+        color: #ccc;
+        text-decoration: none; 
+      }
+    }
+    @media (max-width: @grid-float-breakpoint) {
+      li {
+        display: block;
+        padding: 2pt 0pt;
+      }
+    }
+  }
 }
-header h1 {
-font-size: 20pt;
-color: #fff;
+
+@media (max-width: @grid-float-breakpoint) {
+  header {
+    padding: 10pt 0pt;
+    margin: 0pt;
+  }
 }
-header h2 {
-color: #ccc;
-font-size: 15px;
-margin-top: 0pt;
-}
+
 
 #intro {
-padding-top: 16pt;
-padding-bottom: 16pt;
-padding-left: 20pt;
-padding-right: 20pt;
-border: solid;
-border-color: #ccc;
-margin: 20pt;
+  padding-top: 16pt;
+  padding-bottom: 16pt;
+  padding-left: 20pt;
+  padding-right: 20pt;
+  border: solid;
+  border-color: #ccc;
+  margin: 20pt;
+}
+@media (max-width: @grid-float-breakpoint) {
+  #intro {
+     padding: 0pt;
+     margin: 0pt;
+  }
 }
 
+address {
+  font-style: normal;
+}
 
-#footer {
-border-top: solid #ccc;
-color: #333;
-font-size: 12pt;
-padding: 0 0 10px 0;
-margin-top: 20px;
+footer {
+  border-top: solid #ccc;
+  color: #333;
+  font-size: 12pt;
+  padding: 0pt 0 3pt 0;
+  margin-top: 14pt;
 }
