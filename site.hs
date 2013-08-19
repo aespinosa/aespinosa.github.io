@@ -22,8 +22,11 @@ main = hakyll $ do
             >>= withItemBody (unixFilter "lessc" ["-", "--yui-compress", "-O2"])
 
     match "index.html" $ do
-        route idRoute
-        compile copyFileCompiler
+      route idRoute
+      compile $ do
+        getResourceBody
+          >>= applyAsTemplate defaultContext
+          >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
     match "templates/*" $ compile templateCompiler
 
@@ -31,6 +34,7 @@ main = hakyll $ do
       route $ setExtension ".html"
       compile $ pandocCompiler
         >>= loadAndApplyTemplate "templates/post.html" postContext
+        >>= loadAndApplyTemplate "templates/default.html" postContext
 
 postContext :: Context String
 postContext = 
