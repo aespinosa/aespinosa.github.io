@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid (mappend)
+import           Data.Monoid (mappend, (<>))
 import           Hakyll
 
 
@@ -30,11 +30,22 @@ main = hakyll $ do
 
     match "templates/*" $ compile templateCompiler
 
-    match "blog/posts/*" $ do
+    match "blog/*.md" $ do
       route $ setExtension ".html"
       compile $ pandocCompiler
         >>= loadAndApplyTemplate "templates/post.html" postContext
         >>= loadAndApplyTemplate "templates/default.html" postContext
+
+    create ["blog/index.html"] $ do
+      route idRoute
+      compile $ do
+        posts <- recentFirst =<< loadAll "blog/*.md"
+        let postsContext = constField "title" "Blog" <>
+                  listField "posts" postContext (return posts) <>
+                  defaultContext
+        makeItem ""
+          >>= loadAndApplyTemplate "templates/archive.html" postsContext
+          >>= loadAndApplyTemplate "templates/default.html" postsContext
 
 postContext :: Context String
 postContext = 
