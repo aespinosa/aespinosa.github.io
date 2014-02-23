@@ -60,7 +60,7 @@ hr {
 }
 
 
-header { 
+body > header { 
   padding: 5pt;
   margin: 0pt;
   background: #26478A;
@@ -70,10 +70,10 @@ header {
   h1 {
     font-size: 20pt;
     color: #fff;
-    .make-column(6);
+    .make-column(5);
     line-height: 80%;
 
-    small {
+    small a, a:hover {
       color: #ccc;
       font-size: 10pt;
       margin-top: 0pt;
@@ -109,6 +109,14 @@ header {
   header {
     padding: 10pt 0pt;
     margin: 0pt;
+
+    h1 {
+      padding-left: 3pt;
+    }
+
+    ul {
+      padding-left: 3pt;
+    }
   }
 }
 
@@ -124,8 +132,10 @@ header {
 }
 @media (max-width: @grid-float-breakpoint) {
   #intro {
-     padding: 0pt;
-     margin: 0pt;
+    padding: 1pt;
+    margin: 0pt;
+    border-left: none;
+    border-right: none;
   }
 }
 
@@ -139,4 +149,20 @@ footer {
   font-size: 12pt;
   padding: 0pt 0 3pt 0;
   margin-top: 14pt;
+}
+
+.post {
+  p img {
+    text-align: center;
+  }
+  img {
+    border-radius: 5px;
+    border: 2px solid #ccc;
+
+    @media (max-width: @grid-float-breakpoint) {
+      border-radius: 0px;
+      border: none;
+      width: 100%;
+    }
+  }
 }
