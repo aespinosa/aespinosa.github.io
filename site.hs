@@ -19,7 +19,8 @@ main = hakyll $ do
         route idRoute
         compile $ loadBody "css/main.less"
             >>= makeItem
-            >>= withItemBody (unixFilter "lessc" ["-", "--yui-compress", "-O2"])
+            >>= withItemBody (unixFilter "lessc" ["-"])
+            >>= return . fmap compressCss
 
     match "index.html" $ do
       route idRoute
