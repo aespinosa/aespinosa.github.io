@@ -12,9 +12,6 @@ tags: grid computing
 For my first Ruby project, I reimplemented ADEM from scratch.  ADEM is tool for automatically installing applications on the Open Science Grid via pacman.  Here is a glimpse of the interface.
 
 
-    
-    
-    <code>
     ADEM is a tool for deploying and managing software on the Open Science Grid.
     
       Usage:
@@ -30,8 +27,7 @@ For my first Ruby project, I reimplemented ADEM from scratch.  ADEM is tool for 
         adem sites -h/--help         Manipulate the site list
         adem app -h/--help           Application installation
         adem help                    This help message
-    </code>
-    
+
 
 
 
