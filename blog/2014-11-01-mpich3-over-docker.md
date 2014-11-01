@@ -1,5 +1,5 @@
 ---
-title: Using MPICH over Docker (Global Hack Day)
+title: Distributed High Performance Computing Fortran applications over Docker
 ---
 
 I will use this page as a notepad for my thoughts and notes for participating in
@@ -16,10 +16,10 @@ https://packages.debian.org/jessie/mpich
 
 ## Workflow
 
-Prepare the docker image with the your MPI program
+Prepare the docker image with the your MPI program.  I write a sample in [4].
 
 ```
-mpicc /src/hello.c -o /app/hello
+mpif90 /src/hello.f90 -o /app/hello
 ```
 
 ## Running mpi
@@ -56,3 +56,4 @@ Build and package an actual application to run.
 1. <http://connpass.com/event/9491/>
 2. <http://www.mpich.org>
 3. <http://wiki.mpich.org/mpich/index.php/Hydra_Process_Management_Framework>
+4. <https://github.com/aespinosa/mpich-docker/tree/master/test>
