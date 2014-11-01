@@ -20,7 +20,7 @@ Prepare the docker image with the your MPI program
 
 ```
 mpicc /src/hello.c -o /app/hello
-`` `
+```
 
 ## Running mpi
 
