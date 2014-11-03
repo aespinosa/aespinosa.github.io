@@ -9,22 +9,19 @@ I'll be using MPICH [2] and try to run an mpi-based app over containers.  Code
 will be posted on Github
 ([aespinosa/mpich-docker](http://github.com/aespinosa/mpich-docker))
 
-
 ## Update: 2014-11-03 15:05
 
 Working demo in <http://mpich-demo.allan.wikonec.com>.  Click on the
 `Launch_Node` job first. Then launch all the compute nodes by clicking each
 job's `Build` button.
 
-## Installing mpich
-
-Building dependencies for a lean docker container
-https://packages.debian.org/jessie/mpich
 
 ## Workflow
 
-Prepare the docker image with the your MPI program.  I write a sample in [4].
+* Building dependencies for a lean docker container
+ <https://packages.debian.org/jessie/mpich>.
 
+* Prepare the docker image with the your MPI program.  I write a sample in [4].
 ```
 mpif90 /src/hello.f90 -o /app/hello
 ```
@@ -58,6 +55,19 @@ $ docker run --rm=true --link master:master -h two test \
 
 Write a custom hydra launcher instead of the manual one. Maybe a worthwhile
 project to work one.
+
+## Abstract write-up for Hackday entry
+
+I demonstrate how to run a distributed Fortran application in Docker. For this
+demo, I will show how to build and run a Fortran90 program that computes the
+value of Pi using a distributed monte carlo computation implemented in MPI.  I
+go into the details on how the mpich implementation of MPI works and how to get
+it running on Docker by descriptiong mpich (hydra)'s architecture.  I then show
+the  sourcecode contains in GitHub that Dockerfiles to build the application
+that uses the mpich MPI implementaton.
+
+Full description of this hackday entry is in
+<http://aespinosa.github.io/blog/2014-11-01-mpich3-over-docker.html>.
 
 ## References
 
