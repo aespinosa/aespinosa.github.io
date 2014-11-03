@@ -9,6 +9,13 @@ I'll be using MPICH [2] and try to run an mpi-based app over containers.  Code
 will be posted on Github
 ([aespinosa/mpich-docker](http://github.com/aespinosa/mpich-docker))
 
+
+## Update: 2014-11-03 15:05
+
+Working demo in <http://mpich-demo.allan.wikonec.com>.  Click on the
+`Launch_Node` job first. Then launch all the compute nodes by clicking each
+job's `Build` button.
+
 ## Installing mpich
 
 Building dependencies for a lean docker container
@@ -49,7 +56,8 @@ $ docker run --rm=true --link master:master -h two test \
 
 ## Next steps
 
-Build and package an actual application to run.
+Write a custom hydra launcher instead of the manual one. Maybe a worthwhile
+project to work one.
 
 ## References
 
