@@ -14,39 +14,39 @@ main = hakyll $ do
     match "css/*.less" $ do
         compile getResourceBody
 
-    d <- makePatternDependency "css/*.less"
-    rulesExtraDependencies [d] $ create ["css/main.css"] $ do
-        route idRoute
-        compile $ loadBody "css/main.less"
-            >>= makeItem
-            >>= withItemBody (unixFilter "lessc" ["-"])
-            >>= return . fmap compressCss
+        d <- makePatternDependency "css/*.less"
+        rulesExtraDependencies [d] $ create ["css/main.css"] $ do
+            route idRoute
+            compile $ loadBody "css/main.less"
+                >>= makeItem
+                >>= withItemBody (unixFilter "lessc" ["-"])
+                >>= return . fmap compressCss
 
     match "index.html" $ do
-      route idRoute
-      compile $ do
-        getResourceBody
-          >>= applyAsTemplate defaultContext
-          >>= loadAndApplyTemplate "templates/default.html" defaultContext
+        route idRoute
+        compile $ do
+            getResourceBody
+                >>= applyAsTemplate defaultContext
+                >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
     match "templates/*" $ compile templateCompiler
 
     match "blog/*.md" $ do
-      route $ setExtension ".html"
-      compile $ pandocCompiler
-        >>= loadAndApplyTemplate "templates/post.html" postContext
-        >>= loadAndApplyTemplate "templates/default.html" postContext
+        route $ setExtension ".html"
+        compile $ pandocCompiler
+            >>= loadAndApplyTemplate "templates/post.html" postContext
+            >>= loadAndApplyTemplate "templates/default.html" postContext
 
     create ["blog/index.html"] $ do
-      route idRoute
-      compile $ do
-        posts <- recentFirst =<< loadAll "blog/*.md"
-        let postsContext = constField "title" "Blog" <>
+        route idRoute
+        compile $ do
+            posts <- recentFirst =<< loadAll "blog/*.md"
+            let postsContext = constField "title" "Blog" <>
                   listField "posts" postContext (return posts) <>
                   defaultContext
-        makeItem ""
-          >>= loadAndApplyTemplate "templates/archive.html" postsContext
-          >>= loadAndApplyTemplate "templates/default.html" postsContext
+            makeItem ""
+                >>= loadAndApplyTemplate "templates/archive.html" postsContext
+                >>= loadAndApplyTemplate "templates/default.html" postsContext
 
 postContext :: Context String
 postContext = 
