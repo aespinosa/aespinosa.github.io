@@ -25,9 +25,14 @@ main = hakyll $ do
     match "index.html" $ do
         route idRoute
         compile $ do
+            posts <- fmap (take 5) . recentFirst =<< loadAll "blog/*.md"
+            let indexContext =
+                  listField "posts" postContext (return posts) <>
+                  defaultContext
             getResourceBody
-                >>= applyAsTemplate defaultContext
-                >>= loadAndApplyTemplate "templates/default.html" defaultContext
+                >>= applyAsTemplate indexContext
+                >>= loadAndApplyTemplate "templates/default.html" indexContext
+                >>= relativizeUrls
 
     match "templates/*" $ compile templateCompiler
 
