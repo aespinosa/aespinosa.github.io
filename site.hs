@@ -31,6 +31,13 @@ main = hakyll $ do
 
     match "templates/*" $ compile templateCompiler
 
+    match "*.html" $ do
+        route idRoute
+        compile $ do
+            getResourceBody
+                >>= applyAsTemplate defaultContext
+                >>= loadAndApplyTemplate "templates/default.html" defaultContext
+
     match "blog/*.md" $ do
         route $ setExtension ".html"
         compile $ pandocCompiler
