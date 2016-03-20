@@ -10,6 +10,6 @@ stdenv.mkDerivation {
   buildInputs =  [ 
     (haskellPackages.ghcWithPackages (p: [ p.hakyll ] ))
     darwin.apple_sdk.frameworks.Cocoa
-    pkgs.lessc
+    pkgs.nodePackages.less
   ];
 }
