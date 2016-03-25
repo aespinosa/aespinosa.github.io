@@ -10,7 +10,7 @@ in Web Operations like continuous delivery, capacity planning, etc.
 The following are some links where it is available both in print and online:
 
 * [Amazon](http://amzn.com/1785886800)
-* [Packt Publishing](https://www.packtpub.com/networking-and-servers/docker-high-performance)
+* [Packt Publishing](http://bit.ly/1RkphwU)
 
 For questions and comments regarding the Code samples in the book, you can file
 them as GitHub Issues in
