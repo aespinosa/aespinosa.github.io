@@ -21,5 +21,9 @@ format:
 
 > A. Espinosa, *Docker High Performance.* Birmingham, UK: Packt Publishing, 2016.
 
+## Book discount
 
-![Book Cover](https://www.packtpub.com/sites/default/files/6805OS_4961_Docker%20High%20Performance.jpg)
+Edit (2016-03-25): Packt Pub has a 50% discount promo on my book until April
+24th. Use the link below to get it:
+
+![[Promotional Code](http://bit.ly/1RkphwU)](https://storage.googleapis.com/dockerhp/promo-banner.jpeg)
