@@ -186,6 +186,6 @@ job.buildersList.add(builder)
 job.save()
 ```
 
-[^1]: <https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin
-[^2]: https://supermarket.chef.io/cookbooks/jenkins
-[^3]: https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console
+[^1]: <https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin>
+[^2]: <https://supermarket.chef.io/cookbooks/jenkins>
+[^3]: <https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console>
