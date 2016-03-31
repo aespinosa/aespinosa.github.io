@@ -3,10 +3,10 @@ title: Your whole Jenkins configuration in Code.. no XML!!
 ---
 
 There various pieces in configuration management to manage a Jenkins
-installation. You have the Job DSL plugin [1], a Chef cookbook [2], the Script
-Console [3]. There are others you can use, but I will focus on using the three
-to provide a zero-to-Jenkins setup without clicking on forms or writing XML
-files. I will make details on the following steps to get it done:
+installation. You have the Job DSL plugin [^1], a Chef cookbook [^2], the
+Script Console [^3]. There are others you can use, but I will focus on using
+the three to provide a zero-to-Jenkins setup without clicking on forms or
+writing XML files. I will make details on the following steps to get it done:
 
 1. Secure Jenkins
 2. Update plugins
@@ -185,3 +185,7 @@ job.buildersList.add(builder)
 
 job.save()
 ```
+
+[^1]: <https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin
+[^2]: https://supermarket.chef.io/cookbooks/jenkins
+[^3]: https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console
