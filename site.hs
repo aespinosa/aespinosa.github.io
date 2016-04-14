@@ -51,7 +51,7 @@ main = hakyll $ do
         route $ setExtension ".html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/post.html" postContext
-            >>= loadAndApplyTemplate "templates/default.html" postContext
+            >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
     create ["blog/index.html"] $ do
         route idRoute
@@ -62,7 +62,7 @@ main = hakyll $ do
                   defaultContext
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" postsContext
-                >>= loadAndApplyTemplate "templates/default.html" postsContext
+                >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
 postContext :: Context String
 postContext = 
