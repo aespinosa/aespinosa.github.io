@@ -54,12 +54,14 @@ main = do
                 >>= applyAsTemplate defaultContext
                 >>= loadAndApplyTemplate "templates/default.html"
                         templateContext
+                >>= relativizeUrls
 
     match "blog/*.md" $ do
         route $ setExtension ".html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/post.html" postContext
             >>= loadAndApplyTemplate "templates/default.html" templateContext
+            >>= relativizeUrls
 
     create ["blog/index.html"] $ do
         route idRoute
@@ -72,6 +74,7 @@ main = do
                 >>= loadAndApplyTemplate "templates/archive.html" postsContext
                 >>= loadAndApplyTemplate "templates/default.html"
                         templateContext
+                >>= relativizeUrls
 
 postContext :: Context String
 postContext = 
