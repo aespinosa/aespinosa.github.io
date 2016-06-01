@@ -2,8 +2,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid (mappend, (<>))
 import           Hakyll
+import           Text.Pandoc.Options
 import           Data.Time (getCurrentTime)
 import           Data.Time.Format (formatTime, defaultTimeLocale)
+import qualified Data.HashMap.Strict as M
 
 
 --------------------------------------------------------------------------------
@@ -12,6 +14,7 @@ main = do
   buildDate <- formatTime defaultTimeLocale "%Y %B %e" <$> getCurrentTime
   hakyll $ do
     let templateContext = constField "buildDate" buildDate 
+            `mappend` mathContext
             `mappend` defaultContext
 
     match "images/*" $ do
@@ -58,7 +61,7 @@ main = do
 
     match "blog/*.md" $ do
         route $ setExtension ".html"
-        compile $ pandocCompiler
+        compile $ pandocCompilerWith defaultHakyllReaderOptions pandocOptions
             >>= loadAndApplyTemplate "templates/post.html" postContext
             >>= loadAndApplyTemplate "templates/default.html" templateContext
             >>= relativizeUrls
@@ -80,3 +83,13 @@ postContext :: Context String
 postContext = 
     dateField "date" "%Y %B %e" `mappend`
     defaultContext
+
+pandocOptions :: WriterOptions
+pandocOptions = defaultHakyllWriterOptions { writerHTMLMathMethod = MathJax "" }
+
+mathContext :: Context a
+mathContext = field "mathjax" $ \item -> do
+    metadata <- getMetadata $ itemIdentifier item
+    return $ if "mathjax" `M.member` metadata
+        then "<script type=\"text/javascript\" src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\"></script>"
+        else ""
