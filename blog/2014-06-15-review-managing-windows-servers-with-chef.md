@@ -1,5 +1,5 @@
 ---
-title: Review: Managing Windows Services With Chef
+title: "Review: Managing Windows Services With Chef"
 ---
 
 Here's a few brush notes review of the book *[Managing Windows Services With
