@@ -1,5 +1,5 @@
 ---
-title: Book Release: Docker High Performance
+title: "Book Release: Docker High Performance"
 ---
 
 My book project with Packt Publishing has been released last January. The book
