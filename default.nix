@@ -1,14 +1,13 @@
-let
-  pkgs = import <nixpkgs> {};
-  stdenv = pkgs.stdenv;
-  haskellPackages = pkgs.haskellPackages;
-  darwin = pkgs.darwin;
-in
+with import <nixpkgs> {};
 
 stdenv.mkDerivation {
   name = "haskell-environment";
   buildInputs =  [ 
-    (haskellPackages.ghcWithPackages (p: [ p.hakyll ] ))
+    (haskellPackages.ghcWithPackages (p: [
+      (p.hakyll.overrideDerivation (old: {
+        doCheck = false;
+      }))
+    ] ))
     darwin.apple_sdk.frameworks.Cocoa
     pkgs.nodePackages.less
   ];
