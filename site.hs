@@ -72,7 +72,7 @@ main = do
             posts <- recentFirst =<< loadAll "blog/*.md"
             let postsContext = constField "title" "Blog" <>
                   listField "posts" postContext (return posts) <>
-                  defaultContext
+                  templateContext
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" postsContext
                 >>= loadAndApplyTemplate "templates/default.html"
