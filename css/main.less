@@ -50,15 +50,23 @@ cite:after {
 
 ol.biblio {
 counter-reset: biblist;
+padding-left: 0;
 }
 ol.biblio li {
   list-style: none;
+}
+
+ol.biblio > li {
   margin-left: 0;
-  padding-left: 0em;
-  text-indent: -2em;
+  padding-left: 3.0em;
+  margin-bottom: 0.5em;
 }
 ol.biblio > li:before {
-  content: "[" counter(biblist)"]  ";
+  position: relative;
+  left: -3.0em;
+  margin-right: -2em;
+  width: 3em;
+  content: "[" counter(biblist)"]";
   counter-increment: biblist;
 }
 
