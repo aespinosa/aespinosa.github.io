@@ -1,0 +1,11 @@
+name: blog
+
+dependencies:
+  - base
+  - time
+  - unordered-containers
+  - hakyll
+  - pandoc
+
+executable:
+  main: site.hs

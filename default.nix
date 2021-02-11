@@ -9,15 +9,7 @@ in
 
 stdenv.mkDerivation {
   name = "espinosa-io";
-  buildInputs =  [ 
-    darwin.apple_sdk.frameworks.Cocoa
-    (haskellPackages.ghcWithPackages (p: [
-      (p.hakyll.overrideDerivation (old: {
-        doCheck = false;
-      }))
-    ] ))
-    lessc
-  ];
+  buildInputs =  [ stack ];
   inputs = [ normalize ];
   shellHook = ''
     ln -sf ${normalize} normalize.css

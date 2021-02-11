@@ -1,0 +1,11 @@
+resolver: lts-16.9
+
+packages:
+  - '.'
+extra-deps:
+  - hakyll-4.13.3.0
+nix:
+  enable: true
+  packages:
+    - zlib
+    - lessc
