@@ -111,3 +111,8 @@ k3sServer.destroy();
 // Use commons-io:commons-io library to recursively delete the directory
 FileUtils.deleteDirectory(tempDir.toFile());
 ```
+
+## Source code
+
+Full snippet of the implementation can be found in
+https://gist.github.com/aespinosa/10268e7dfc3b2b3661b0daea8e7269ee
